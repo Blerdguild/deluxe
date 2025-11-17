@@ -1,11 +1,14 @@
 // C:/dev/flutter_projects/deluxe/lib/shared/services/service_locator.dart
 import 'package:get_it/get_it.dart';
+import 'package:deluxe/core/firebase/auth_service.dart';
 import 'package:deluxe/features/auth/bloc/auth_bloc.dart';
 
-final getIt = GetIt.instance;
+final sl = GetIt.instance;
 
 void setupServiceLocator() {
-  // Register services, blocs, etc.
-  getIt.registerLazySingleton<AuthBloc>(() => AuthBloc());
-  print("Service locator setup called.");
+  // Services
+  sl.registerLazySingleton(() => AuthService());
+
+  // BLoCs
+  sl.registerFactory(() => AuthBloc(authService: sl<AuthService>()));
 }
