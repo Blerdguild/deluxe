@@ -45,7 +45,7 @@ class ItalVibesApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'ITALVIBES',
-        theme: AppTheme.darkGreenTheme,
+        theme: AppTheme.darkTheme, // Use the new dark theme
         // The AgeGateWrapper will be the first thing the user sees.
         home: const AgeGateWrapper(),
       ),

@@ -1,0 +1,148 @@
+import 'package:deluxe/features/dashboard/bloc/dispensary_bloc.dart';
+import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
+import 'package:deluxe/features/dashboard/bloc/product_event.dart';
+import 'package:deluxe/features/dashboard/bloc/product_state.dart';
+import 'package:deluxe/features/dashboard/presentation/widgets/dispensary_card.dart';
+import 'package:deluxe/features/dashboard/presentation/widgets/product_card.dart';
+import 'package:deluxe/shared/services/service_locator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class ConsumerDashboard extends StatelessWidget {
+  const ConsumerDashboard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<DispensaryBloc>()..add(LoadDispensaries()),
+        ),
+        BlocProvider(
+          create: (context) => sl<ProductBloc>()..add(LoadProducts()),
+        ),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'ITALVIBES x DeluxeBudSt',
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.onPrimary,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.search, color: theme.colorScheme.onPrimary),
+              onPressed: () {
+                // TODO: Implement search functionality
+              },
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Browse Dispensaries',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 180,
+                child: BlocBuilder<DispensaryBloc, DispensaryState>(
+                  builder: (context, state) {
+                    if (state is DispensaryLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is DispensaryLoaded) {
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.dispensaries.length,
+                        itemBuilder: (context, index) {
+                          return SizedBox(
+                            width: 150,
+                            child: DispensaryCard(
+                              dispensary: state.dispensaries[index],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    if (state is DispensaryError) {
+                      return Center(child: Text(state.message));
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Popular Products',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<ProductBloc, ProductState>(
+                builder: (context, state) {
+                  if (state is ProductLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is ProductLoaded) {
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.75,
+                      ),
+                      itemCount: state.products.length,
+                      itemBuilder: (context, index) {
+                        return ProductCard(product: state.products[index]);
+                      },
+                    );
+                  }
+                  if (state is ProductError) {
+                    return Center(child: Text(state.message));
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 0,
+          onTap: (index) {},
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.store),
+              label: 'Dispensaries',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_bag),
+              label: 'Products',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

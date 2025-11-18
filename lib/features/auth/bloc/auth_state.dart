@@ -1,6 +1,5 @@
-// C:/dev/flutter_projects/deluxe/lib/features/auth/bloc/auth_state.dart
+import 'package:deluxe/shared/models/user_model.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -14,7 +13,7 @@ class AuthUninitialized extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthAuthenticated extends AuthState {
-  final User user;
+  final UserModel user;
 
   const AuthAuthenticated({required this.user});
 
