@@ -78,7 +78,10 @@ class ConsumerDashboard extends StatelessWidget {
                   ),
                   itemCount: state.products.length,
                   itemBuilder: (context, index) {
-                    return ProductCard(product: state.products[index]);
+                    return ProductCard(
+                      product: state.products[index],
+                      purpose: ProductCardPurpose.forConsumer,
+                    );
                   },
                 );
               }

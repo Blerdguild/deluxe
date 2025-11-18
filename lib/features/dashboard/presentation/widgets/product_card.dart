@@ -1,19 +1,29 @@
-
+import 'package:deluxe/features/consumer/presentation/pages/consumer_order_form_screen.dart';
 import 'package:deluxe/features/dashboard/presentation/pages/order_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 
+// Enum to define the card's purpose
+enum ProductCardPurpose {
+  forDispensary,
+  forConsumer,
+}
+
 class ProductCard extends StatelessWidget {
   final Product product;
+  final ProductCardPurpose purpose;
 
   const ProductCard({
     Key? key,
     required this.product,
+    required this.purpose,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final buttonText = purpose == ProductCardPurpose.forConsumer ? 'Buy Now' : 'Order';
+
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
@@ -28,13 +38,11 @@ class ProductCard extends StatelessWidget {
               product.imageUrl,
               fit: BoxFit.cover,
               width: double.infinity,
-              // Basic error handling for the image
               errorBuilder: (context, error, stackTrace) {
                 return const Center(
                   child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
                 );
               },
-              // Loading indicator for the image
               loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Center(
@@ -93,16 +101,24 @@ class ProductCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => OrderFormScreen(product: product),
-                  ),
-                );
+                if (purpose == ProductCardPurpose.forConsumer) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ConsumerOrderFormScreen(product: product),
+                    ),
+                  );
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => OrderFormScreen(product: product),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 36), // full width
               ),
-              child: const Text('Order'),
+              child: Text(buttonText),
             ),
           ),
         ],

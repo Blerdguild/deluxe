@@ -8,6 +8,10 @@ class Product {
   final double rating;
   final int reviewCount;
   final String imageUrl;
+  final String description;
+  final String dispensaryId;
+  final String farmerId;
+  final String farmerName;
 
   Product({
     required this.id,
@@ -17,6 +21,10 @@ class Product {
     required this.rating,
     required this.reviewCount,
     required this.imageUrl,
+    required this.description,
+    required this.dispensaryId,
+    required this.farmerId,
+    required this.farmerName,
   });
 
   factory Product.fromSnapshot(DocumentSnapshot doc) {
@@ -29,6 +37,10 @@ class Product {
       rating: (data['rating'] ?? 0.0).toDouble(),
       reviewCount: data['reviewCount'] ?? 0,
       imageUrl: data['imageUrl'] ?? '',
+      description: data['description'] ?? 'No description available.',
+      dispensaryId: data['dispensaryId'] ?? '',
+      farmerId: data['farmerId'] ?? '',
+      farmerName: data['farmerName'] ?? '',
     );
   }
 
@@ -40,6 +52,10 @@ class Product {
       'rating': rating,
       'reviewCount': reviewCount,
       'imageUrl': imageUrl,
+      'description': description,
+      'dispensaryId': dispensaryId,
+      'farmerId': farmerId,
+      'farmerName': farmerName,
     };
   }
 }

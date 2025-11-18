@@ -14,18 +14,28 @@ class ProductListScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (state is ProductLoaded) {
-          return ListView.builder(
+          return GridView.builder(
+            padding: const EdgeInsets.all(8.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // 2 cards per row
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: 0.7, // Adjust for better card layout
+            ),
             itemCount: state.products.length,
             itemBuilder: (context, index) {
               final product = state.products[index];
-              return ProductCard(product: product);
+              return ProductCard(
+                product: product,
+                purpose: ProductCardPurpose.forConsumer, // Specify the purpose
+              );
             },
           );
         }
         if (state is ProductError) {
           return Center(child: Text(state.message));
         }
-        return const Center(child: Text('No products found.'));
+        return const Center(child: Text('Welcome! No products available right now.'));
       },
     );
   }

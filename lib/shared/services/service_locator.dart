@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deluxe/core/firebase/firestore_service.dart';
+import 'package:deluxe/features/consumer/data/datasources/consumer_order_datasource.dart';
+import 'package:deluxe/features/consumer/data/repositories/consumer_order_repository_impl.dart';
+import 'package:deluxe/features/consumer/domain/repositories/consumer_order_repository.dart';
+import 'package:deluxe/features/consumer/presentation/bloc/consumer_order_bloc.dart';
 import 'package:deluxe/features/dashboard/bloc/dispensary_bloc.dart';
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
 import 'package:deluxe/features/dispensary/presentation/bloc/order_creation_bloc.dart';
@@ -37,12 +41,15 @@ void setupServiceLocator() {
   // --- Data Sources ---
   sl.registerLazySingleton<HarvestDataSource>(() => HarvestLocalDataSource());
   sl.registerLazySingleton<FarmerOrderDataSource>(() => FarmerOrderLocalDataSource());
+  sl.registerLazySingleton<ConsumerOrderDataSource>(() => ConsumerOrderLocalDataSource());
 
   // --- Repositories ---
   sl.registerLazySingleton<HarvestRepository>(
       () => HarvestRepositoryImpl(sl<HarvestDataSource>()));
   sl.registerLazySingleton<FarmerOrderRepository>(
       () => FarmerOrderRepositoryImpl(dataSource: sl<FarmerOrderDataSource>()));
+  sl.registerLazySingleton<ConsumerOrderRepository>(() =>
+      ConsumerOrderRepositoryImpl(dataSource: sl<ConsumerOrderDataSource>()));
 
   // --- BLoCs ---
   sl.registerFactory(
@@ -74,6 +81,11 @@ void setupServiceLocator() {
   sl.registerFactory(
     () => OrderCreationBloc(
       farmerOrderRepository: sl<FarmerOrderRepository>(),
+    ),
+  );
+  sl.registerFactory(
+    () => ConsumerOrderBloc(
+      repository: sl<ConsumerOrderRepository>(),
     ),
   );
 }
