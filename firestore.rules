@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function hasRole(role) {
+      return isAuthenticated() && request.auth.token.role == role;
+    }
+    
+    function isAdmin() {
+      return hasRole('admin');
+    }
+    
+    function isFarmer() {
+      return hasRole('farmer');
+    }
+    
+    function isDispensary() {
+      return hasRole('dispensary');
+    }
+
+    // --- Users Collection ---
+    // Users can read/write their own profile.
+    // Admins can read/write all.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
+      
+      // Sub-collections (e.g., private profiles)
+      match /private/{document=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // --- Products Collection ---
+    // Public read.
+    // Write restricted to Farmers and Admins.
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isFarmer() || isAdmin();
+      allow update: if (isFarmer() && resource.data.farmerId == request.auth.uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // --- Batches Collection ---
+    // Public read (for transparency).
+    // Write restricted to Farmers and Admins.
+    match /batches/{batchId} {
+      allow read: if true;
+      allow create: if isFarmer() || isAdmin();
+      allow update: if (isFarmer() && resource.data.farmerId == request.auth.uid) || isAdmin();
+    }
+
+    // --- Inventory Collection ---
+    // /inventory/{userId}/items/{productId}
+    match /inventory/{userId}/{document=**} {
+      allow read: if true; // Public inventory visibility? Or restrict to authenticated?
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // --- Orders Collection ---
+    // Users can create orders and read their own.
+    match /orders/{orderId} {
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (resource.data.consumerId == request.auth.uid || resource.data.sellerId == request.auth.uid || isAdmin());
+      allow update: if isAdmin(); // Status updates usually handled by backend/admin
+    }
+    
+    // --- Vouchers Collection ---
+    match /vouchers/{voucherId} {
+      allow read: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      // Creation usually handled by backend after payment
+      allow write: if false; 
+    }
+  }
+}

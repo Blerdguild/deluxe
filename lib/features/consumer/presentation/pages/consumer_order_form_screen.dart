@@ -1,10 +1,10 @@
 import 'package:deluxe/features/consumer/presentation/bloc/consumer_order_bloc.dart';
 import 'package:deluxe/shared/models/product_model.dart';
+import 'package:deluxe/shared/models/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
-import 'package:deluxe/features/consumer/domain/entities/consumer_order.dart';
-import 'dart:math';
+import 'package:uuid/uuid.dart';
 
 class ConsumerOrderFormScreen extends StatelessWidget {
   final Product product;
@@ -34,16 +34,18 @@ class _ConsumerOrderFormViewState extends State<_ConsumerOrderFormView> {
 
   void _submitOrder() {
     final quantity = int.tryParse(_quantityController.text) ?? 1;
+    final uuid = const Uuid();
 
     // Create a mock consumer order
-    final newOrder = ConsumerOrder(
-      id: 'co' + Random().nextInt(999).toString(), // Mock ID
-      productName: widget.product.name,
-      quantity: quantity,
-      dispensaryId: widget.product.dispensaryId, // Assuming product has dispensaryId
-      consumerId: 'current_user_id', // Mock current user ID
+    final newOrder = OrderModel(
+      id: uuid.v4(),
+      consumerId: 'current_user_id', // Should be real user ID
+      sellerId: widget.product.farmerId,
+      items: [widget.product], // Simplified for now
+      totalPrice: widget.product.price * quantity,
       status: 'Pending',
-      orderDate: DateTime.now(),
+      createdAt: DateTime.now(),
+      dispensaryName: 'Self', // Or fetch real user name
     );
 
     context.read<ConsumerOrderBloc>().add(PlaceConsumerOrder(order: newOrder));
@@ -73,7 +75,8 @@ class _ConsumerOrderFormViewState extends State<_ConsumerOrderFormView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.product.name, style: Theme.of(context).textTheme.headlineMedium),
+              Text(widget.product.name,
+                  style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 8),
               Text(widget.product.description),
               const SizedBox(height: 16),

@@ -14,7 +14,7 @@ class ConsumerOrderInitial extends ConsumerOrderState {}
 class ConsumerOrderLoadInProgress extends ConsumerOrderState {}
 
 class ConsumerOrderLoadSuccess extends ConsumerOrderState {
-  final List<ConsumerOrder> orders;
+  final List<OrderModel> orders;
 
   const ConsumerOrderLoadSuccess({required this.orders});
 

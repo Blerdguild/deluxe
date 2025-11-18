@@ -8,7 +8,7 @@ abstract class ConsumerOrderEvent extends Equatable {
 }
 
 class PlaceConsumerOrder extends ConsumerOrderEvent {
-  final ConsumerOrder order;
+  final OrderModel order;
 
   const PlaceConsumerOrder({required this.order});
 
@@ -17,3 +17,17 @@ class PlaceConsumerOrder extends ConsumerOrderEvent {
 }
 
 class LoadConsumerOrders extends ConsumerOrderEvent {}
+
+class _ConsumerOrdersUpdated extends ConsumerOrderEvent {
+  final List<OrderModel> orders;
+  const _ConsumerOrdersUpdated(this.orders);
+  @override
+  List<Object> get props => [orders];
+}
+
+class _ConsumerOrdersError extends ConsumerOrderEvent {
+  final String message;
+  const _ConsumerOrdersError(this.message);
+  @override
+  List<Object> get props => [message];
+}

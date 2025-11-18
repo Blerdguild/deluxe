@@ -27,36 +27,54 @@ class FarmerOrdersScreen extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
                     child: ListTile(
-                      title: Text(order.strainName),
-                      subtitle: Text(
-                          '${order.quantity}g - Ordered by ${order.dispensaryName}'),
+                      title: Text('Order #${order.id.substring(0, 8)}'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Buyer: ${order.dispensaryName}'),
+                          Text(
+                              'Total: \$${order.totalPrice.toStringAsFixed(2)}'),
+                          Text('Items: ${order.items.length}'),
+                        ],
+                      ),
                       trailing: order.status == 'Pending'
                           ? Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                ElevatedButton(
+                                IconButton(
+                                  icon: const Icon(Icons.check,
+                                      color: Colors.green),
                                   onPressed: () {
                                     context.read<FarmerOrderBloc>().add(
-                                          UpdateOrderStatus(order.id, 'Accepted'),
+                                          UpdateOrderStatus(
+                                              order.id, 'Accepted'),
                                         );
                                   },
-                                  child: const Text('Accept'),
                                 ),
-                                const SizedBox(width: 8),
-                                ElevatedButton(
+                                IconButton(
+                                  icon: const Icon(Icons.close,
+                                      color: Colors.red),
                                   onPressed: () {
                                     context.read<FarmerOrderBloc>().add(
-                                          UpdateOrderStatus(order.id, 'Declined'),
+                                          UpdateOrderStatus(
+                                              order.id, 'Declined'),
                                         );
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                  ),
-                                  child: const Text('Decline'),
                                 ),
                               ],
                             )
-                          : Text(order.status),
+                          : Text(
+                              order.status,
+                              style: TextStyle(
+                                color: order.status == 'Accepted'
+                                    ? Colors.green
+                                    : Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                      onTap: () {
+                        // TODO: Navigate to detailed order view
+                      },
                     ),
                   );
                 },

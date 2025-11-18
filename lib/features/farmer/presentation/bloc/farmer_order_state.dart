@@ -12,7 +12,7 @@ class FarmerOrderInitial extends FarmerOrderState {}
 class FarmerOrderLoading extends FarmerOrderState {}
 
 class FarmerOrderLoaded extends FarmerOrderState {
-  final List<FarmerOrder> orders;
+  final List<OrderModel> orders;
 
   const FarmerOrderLoaded(this.orders);
 

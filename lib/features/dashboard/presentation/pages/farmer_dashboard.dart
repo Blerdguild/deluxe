@@ -1,7 +1,7 @@
-
 import 'package:deluxe/features/farmer/domain/entities/harvest.dart';
 import 'package:deluxe/features/farmer/presentation/bloc/harvest_bloc.dart';
 import 'package:deluxe/features/farmer/presentation/pages/farmer_orders_screen.dart';
+import 'package:deluxe/features/farmer/presentation/pages/inventory_screen.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +20,7 @@ class _FarmerDashboardState extends State<FarmerDashboard>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -39,6 +39,7 @@ class _FarmerDashboardState extends State<FarmerDashboard>
           tabs: const [
             Tab(text: 'Harvests'),
             Tab(text: 'Orders'),
+            Tab(text: 'Inventory'),
           ],
         ),
       ),
@@ -61,6 +62,7 @@ class _FarmerDashboardState extends State<FarmerDashboard>
             ),
           ),
           const FarmerOrdersScreen(),
+          const InventoryScreen(),
         ],
       ),
     );

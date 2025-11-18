@@ -1,8 +1,6 @@
-
-import 'package:deluxe/features/farmer/domain/entities/farmer_order.dart';
+import 'package:deluxe/shared/models/order_model.dart';
 
 abstract class FarmerOrderRepository {
-  Future<List<FarmerOrder>> getOrders();
+  Stream<List<OrderModel>> getOrders();
   Future<void> updateOrderStatus(String orderId, String newStatus);
-  Future<void> addOrder(FarmerOrder order);
 }

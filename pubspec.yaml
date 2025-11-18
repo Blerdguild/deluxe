@@ -32,6 +32,7 @@ dependencies:
 
   # UI & Utils – conflict-free combination verified Nov 17 2025
   google_fonts: ^6.2.1 # Added for theme
+  intl: ^0.19.0 # Added for date formatting
   google_sign_in: ^6.2.1 # Added for Google Sign-In
   cached_network_image: ^3.3.1   # ← pinned to avoid 'web' package 1.0.0 conflict with package_info_plus 7.x
   image_picker: ^1.1.2

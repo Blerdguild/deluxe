@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:deluxe/core/firebase/firestore_service.dart';
+import 'package:deluxe/core/repositories/product_repository.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 import 'package:equatable/equatable.dart';
 
@@ -9,11 +9,11 @@ part 'product_event.dart';
 part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
-  final FirestoreService _firestoreService;
+  final ProductRepository _productRepository;
   StreamSubscription? _productSubscription;
 
-  ProductBloc({required FirestoreService firestoreService})
-      : _firestoreService = firestoreService,
+  ProductBloc({required ProductRepository productRepository})
+      : _productRepository = productRepository,
         super(ProductInitial()) {
     on<LoadProducts>(_onLoadProducts);
     on<ProductUpdate>(_onProductUpdate);
@@ -26,7 +26,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ) {
     emit(ProductLoading());
     _productSubscription?.cancel();
-    _productSubscription = _firestoreService.getProducts().listen(
+    _productSubscription = _productRepository.getProducts().listen(
           (products) => add(ProductUpdate(products: products)),
           onError: (error) =>
               add(_ProductsUpdateFailed(message: error.toString())),

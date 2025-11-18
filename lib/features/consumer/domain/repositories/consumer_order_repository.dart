@@ -1,7 +1,7 @@
-import 'package:deluxe/features/consumer/domain/entities/consumer_order.dart';
+import 'package:deluxe/shared/models/order_model.dart';
 
 // Abstract contract for the consumer order repository
 abstract class ConsumerOrderRepository {
-  Future<List<ConsumerOrder>> getOrders();
-  Future<void> addOrder(ConsumerOrder order);
+  Stream<List<OrderModel>> getOrders();
+  Future<void> createOrder(OrderModel order);
 }
