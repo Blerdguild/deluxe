@@ -8,7 +8,6 @@ import 'package:deluxe/features/dashboard/presentation/pages/profile_screen.dart
 import 'package:deluxe/shared/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:deluxe/features/dashboard/bloc/product_event.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});

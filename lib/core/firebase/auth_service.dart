@@ -1,42 +1,42 @@
+// C:/dev/flutter_projects/deluxe/lib/core/firebase/auth_service.dart
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-/// A service class that wraps FirebaseAuth functionality.
-///
-/// This service provides a stream of the current user's authentication state
-/// and includes methods for sign-in, sign-up, and sign-out.
 class AuthService {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
-  AuthService({FirebaseAuth? firebaseAuth, GoogleSignIn? googleSignIn})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+  AuthService({
+    required FirebaseAuth firebaseAuth,
+    required GoogleSignIn googleSignIn,
+  })  : _firebaseAuth = firebaseAuth,
+        _googleSignIn = googleSignIn;
 
-  /// A stream that emits the current [User] when the authentication state changes.
-  ///
-  /// Emits null if the user is signed out.
-  Stream<User?> get user => _firebaseAuth.authStateChanges();
+  // FIX: Define the 'getCurrentUser' method.
+  /// Returns the current Firebase [User] if one is signed in, otherwise returns null.
+  User? getCurrentUser() {
+    return _firebaseAuth.currentUser;
+  }
 
-  /// Signs in the user with Google and then with Firebase.
+  /// Initiates the Google Sign-In flow.
   ///
-  /// Returns the [UserCredential] from Firebase.
-  /// Throws an exception if the Google Sign-In process is canceled by the user.
+  /// Throws a [FirebaseAuthException] if the process fails at the Firebase level.
+  /// Returns a [UserCredential] upon success.
   Future<UserCredential> signInWithGoogle() async {
-    // Trigger the Google Sign-In flow.
+    // Trigger the Google authentication flow.
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-    // If the user canceled the sign-in, throw an exception.
+    // If the user cancels the flow, googleUser will be null.
     if (googleUser == null) {
-      throw Exception('Google Sign In canceled by user.');
+      throw Exception('Google Sign-In was cancelled by the user.');
     }
 
     // Obtain the auth details from the request.
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
     // Create a new credential for Firebase.
-    final AuthCredential credential = GoogleAuthProvider.credential(
+    final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -45,8 +45,9 @@ class AuthService {
     return await _firebaseAuth.signInWithCredential(credential);
   }
 
-  /// Signs out the current user from both Firebase and Google.
+  /// Signs the current user out from both Firebase and Google.
   Future<void> signOut() async {
+    // We sign out from both services to ensure a clean logout.
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
   }

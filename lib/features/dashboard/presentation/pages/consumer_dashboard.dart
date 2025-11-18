@@ -1,7 +1,5 @@
 import 'package:deluxe/features/dashboard/bloc/dispensary_bloc.dart';
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
-import 'package:deluxe/features/dashboard/bloc/product_event.dart';
-import 'package:deluxe/features/dashboard/bloc/product_state.dart';
 import 'package:deluxe/features/dashboard/presentation/widgets/dispensary_card.dart';
 import 'package:deluxe/features/dashboard/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';

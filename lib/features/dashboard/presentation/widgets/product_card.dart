@@ -1,4 +1,5 @@
 
+import 'package:deluxe/features/dashboard/presentation/pages/order_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 
@@ -88,9 +89,24 @@ class ProductCard extends StatelessWidget {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => OrderFormScreen(product: product),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 36), // full width
+              ),
+              child: const Text('Order'),
+            ),
+          ),
         ],
       ),
     );
   }
 }
-

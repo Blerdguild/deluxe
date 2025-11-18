@@ -1,25 +1,27 @@
-import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// C:/dev/flutter_projects/deluxe/lib/features/auth/bloc/auth_event.dart
 
+part of 'auth_bloc.dart';
+
+@immutable
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-/// Event fired when the auth state changes (e.g., user signs in or out).
-class AuthUserChanged extends AuthEvent {
-  final User? user;
-
-  const AuthUserChanged({this.user});
-
-  @override
-  List<Object?> get props => [user];
+/// Event dispatched when the app first starts to check the current auth state.
+class AppStarted extends AuthEvent {
+  const AppStarted();
 }
 
-/// Event fired when the user requests to sign in with Google.
-class SignInWithGoogleRequested extends AuthEvent {}
+// FIX: Define the new event class for handling Google Sign-In requests.
+/// Event dispatched when the user presses the "Sign In with Google" button.
+class SignInWithGoogleRequested extends AuthEvent {
+  const SignInWithGoogleRequested();
+}
 
-/// Event fired when the user requests to sign out.
-class SignOutRequested extends AuthEvent {}
+/// Event dispatched when the user attempts to sign out.
+class AuthLogoutRequested extends AuthEvent {
+  const AuthLogoutRequested();
+}

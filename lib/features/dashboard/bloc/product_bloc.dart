@@ -53,21 +53,3 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     return super.close();
   }
 }
-
-class ProductUpdate extends ProductEvent {
-  final List<Product> products;
-
-  const ProductUpdate({required this.products});
-
-  @override
-  List<Object> get props => [products];
-}
-
-class _ProductsUpdateFailed extends ProductEvent {
-  final String message;
-
-  const _ProductsUpdateFailed({required this.message});
-
-  @override
-  List<Object> get props => [message];
-}

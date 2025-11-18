@@ -1,5 +1,4 @@
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
-import 'package:deluxe/features/dashboard/bloc/product_state.dart';
 import 'package:deluxe/features/dashboard/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

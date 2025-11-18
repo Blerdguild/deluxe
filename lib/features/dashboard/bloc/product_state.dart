@@ -1,5 +1,4 @@
-import 'package:deluxe/shared/models/product_model.dart';
-import 'package:equatable/equatable.dart';
+part of 'product_bloc.dart';
 
 abstract class ProductState extends Equatable {
   const ProductState();
@@ -7,6 +6,8 @@ abstract class ProductState extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class ProductInitial extends ProductState {}
 
 class ProductLoading extends ProductState {}
 

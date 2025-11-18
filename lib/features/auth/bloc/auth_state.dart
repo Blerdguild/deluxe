@@ -1,24 +1,29 @@
-import 'package:deluxe/shared/models/user_model.dart';
-import 'package:equatable/equatable.dart';
+// C:/dev/flutter_projects/deluxe/lib/features/auth/bloc/auth_state.dart
 
+part of 'auth_bloc.dart';
+
+@immutable
 abstract class AuthState extends Equatable {
   const AuthState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class AuthUninitialized extends AuthState {}
+/// Initial state, before any authentication check has been made.
+class AuthInitial extends AuthState {}
 
-class AuthLoading extends AuthState {}
+/// State representing a successfully authenticated user.
+class Authenticated extends AuthState {
+  // In a real app, you would hold a User model here.
+  final String userId;
 
-class AuthAuthenticated extends AuthState {
-  final UserModel user;
-
-  const AuthAuthenticated({required this.user});
+  const Authenticated({required this.userId});
 
   @override
-  List<Object?> get props => [user];
+  List<Object> get props => [userId];
 }
 
-class AuthUnauthenticated extends AuthState {}
+/// State representing a user who is not authenticated.
+class Unauthenticated extends AuthState {}
+
