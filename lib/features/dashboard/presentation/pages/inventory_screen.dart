@@ -1,13 +1,13 @@
 
 import 'package:flutter/material.dart';
 
-class FarmerDashboard extends StatelessWidget {
-  const FarmerDashboard({super.key});
+class InventoryScreen extends StatelessWidget {
+  const InventoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Farmer Dashboard'),
+      child: Text('Inventory Screen'),
     );
   }
 }
