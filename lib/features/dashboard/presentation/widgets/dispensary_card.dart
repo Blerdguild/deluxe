@@ -18,6 +18,14 @@ class DispensaryCard extends StatelessWidget {
               dispensary.imageUrl,
               fit: BoxFit.cover,
               width: double.infinity,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Theme.of(context).colorScheme.surface,
+                  child: const Center(
+                    child: Icon(Icons.store, color: Colors.grey, size: 40),
+                  ),
+                );
+              },
             ),
           ),
           Padding(

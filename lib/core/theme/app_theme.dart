@@ -1,102 +1,111 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // --- Colors ---
-  static const Color _darkGreen = Color(0xFF122115);
-  static const Color _accentGreen = Color(0xFF2E7D32);
-  static const Color _cardGreen = Color(0xFF1A3824);
-  static const Color _offWhite = Color(0xFFE8E5DA);
+  static const Color _background = Color(0xFF0D1610); // Darker Green/Black
+  static const Color _cardSurface = Color(0xFF16261A); // Dark Green for cards
+  static const Color _primaryGreen = Color(0xFF2E7D32); // Rich Green
+  static const Color _textWhite = Color(0xFFFFFFFF);
+  static const Color _textGrey = Color(0xFFB0BEC5);
   static const Color _gold = Color(0xFFFFD700);
-  static const Color _grey = Color(0xFF9E9E9E);
 
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-    primaryColor: _accentGreen,
-    scaffoldBackgroundColor: _darkGreen,
+    primaryColor: _primaryGreen,
+    scaffoldBackgroundColor: _background,
     fontFamily: GoogleFonts.lato().fontFamily,
 
     // --- Color Scheme ---
     colorScheme: const ColorScheme.dark(
-      primary: _accentGreen,
-      secondary: _accentGreen,
-      surface: _cardGreen,
-      background: _darkGreen,
-      onPrimary: _offWhite,
-      onSecondary: _offWhite,
-      onSurface: _offWhite,
-      onBackground: _offWhite,
+      primary: _primaryGreen,
+      secondary: _primaryGreen,
+      surface: _cardSurface,
+      background: _background,
+      onPrimary: _textWhite,
+      onSecondary: _textWhite,
+      onSurface: _textWhite,
+      onBackground: _textWhite,
       error: Colors.redAccent,
-      onError: _offWhite,
+      onError: _textWhite,
     ),
 
     // --- Component Themes ---
     appBarTheme: const AppBarTheme(
-      backgroundColor: _darkGreen,
+      backgroundColor: _background,
       elevation: 0,
+      scrolledUnderElevation: 0,
       titleTextStyle: TextStyle(
-        color: _offWhite,
+        color: _textWhite,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
-      iconTheme: IconThemeData(color: _offWhite),
+      iconTheme: IconThemeData(color: _textWhite),
     ),
 
     cardTheme: CardThemeData(
-      color: _cardGreen,
-      elevation: 2,
+      color: _cardSurface,
+      elevation: 0, // Flat look for modern feel
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
+      margin: EdgeInsets.zero,
     ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: _accentGreen,
-        foregroundColor: _offWhite,
+        backgroundColor: _primaryGreen,
+        foregroundColor: _textWhite,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     ),
 
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: _darkGreen,
-      selectedItemColor: _offWhite,
-      unselectedItemColor: _grey,
+      backgroundColor: _background,
+      selectedItemColor: _primaryGreen,
+      unselectedItemColor: _textGrey,
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
+      elevation: 0,
     ),
 
-    inputDecorationTheme: const InputDecorationTheme(
+    inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: _cardGreen,
+      fillColor: _cardSurface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderRadius: BorderRadius.circular(30), // Rounded search bar
         borderSide: BorderSide.none,
       ),
-      hintStyle: TextStyle(color: _grey),
+      hintStyle: const TextStyle(color: _textGrey),
+      prefixIconColor: _textGrey,
     ),
 
     // --- Text Theme ---
     textTheme: const TextTheme(
-      displayLarge: TextStyle(color: _offWhite, fontWeight: FontWeight.bold),
-      displayMedium: TextStyle(color: _offWhite, fontWeight: FontWeight.bold),
-      displaySmall: TextStyle(color: _offWhite, fontWeight: FontWeight.bold),
-      headlineLarge: TextStyle(color: _offWhite, fontWeight: FontWeight.bold),
-      headlineMedium: TextStyle(color: _offWhite, fontWeight: FontWeight.bold),
-      headlineSmall: TextStyle(color: _offWhite, fontWeight: FontWeight.bold),
-      titleLarge: TextStyle(color: _offWhite, fontWeight: FontWeight.w600),
-      titleMedium: TextStyle(color: _offWhite, fontWeight: FontWeight.w600),
-      titleSmall: TextStyle(color: _offWhite, fontWeight: FontWeight.w600),
-      bodyLarge: TextStyle(color: _offWhite),
-      bodyMedium: TextStyle(color: _offWhite),
-      bodySmall: TextStyle(color: _grey),
-      labelLarge: TextStyle(color: _offWhite, fontWeight: FontWeight.bold),
-      labelMedium: TextStyle(color: _offWhite),
-      labelSmall: TextStyle(color: _offWhite),
+      displayLarge: TextStyle(color: _textWhite, fontWeight: FontWeight.bold),
+      displayMedium: TextStyle(color: _textWhite, fontWeight: FontWeight.bold),
+      displaySmall: TextStyle(color: _textWhite, fontWeight: FontWeight.bold),
+      headlineLarge: TextStyle(color: _textWhite, fontWeight: FontWeight.bold),
+      headlineMedium: TextStyle(color: _textWhite, fontWeight: FontWeight.bold),
+      headlineSmall: TextStyle(color: _textWhite, fontWeight: FontWeight.bold),
+      titleLarge: TextStyle(color: _textWhite, fontWeight: FontWeight.w600),
+      titleMedium: TextStyle(color: _textWhite, fontWeight: FontWeight.w600),
+      titleSmall: TextStyle(color: _textWhite, fontWeight: FontWeight.w600),
+      bodyLarge: TextStyle(color: _textWhite),
+      bodyMedium: TextStyle(color: _textWhite),
+      bodySmall: TextStyle(color: _textGrey),
+      labelLarge: TextStyle(color: _textWhite, fontWeight: FontWeight.bold),
+      labelMedium: TextStyle(color: _textWhite),
+      labelSmall: TextStyle(color: _textWhite),
     ),
   );
 }

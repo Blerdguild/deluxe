@@ -1,0 +1,23 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "harvests",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "farmerId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "harvestDate",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "__name__",
+                    "order": "DESCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}

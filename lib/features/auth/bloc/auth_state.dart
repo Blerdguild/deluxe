@@ -30,3 +30,12 @@ class Authenticated extends AuthState {
 
 /// State representing a user who is not authenticated.
 class Unauthenticated extends AuthState {}
+
+class AuthNeedsRoleSelection extends AuthState {
+  final String userId;
+
+  const AuthNeedsRoleSelection({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
+}

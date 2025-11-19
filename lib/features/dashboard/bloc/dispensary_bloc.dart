@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:deluxe/core/firebase/firestore_service.dart';
+import 'package:deluxe/features/dashboard/domain/repositories/dispensary_repository.dart';
 import 'package:deluxe/shared/models/dispensary_model.dart';
 import 'package:equatable/equatable.dart';
 
@@ -9,11 +9,11 @@ part 'dispensary_event.dart';
 part 'dispensary_state.dart';
 
 class DispensaryBloc extends Bloc<DispensaryEvent, DispensaryState> {
-  final FirestoreService _firestoreService;
+  final DispensaryRepository _dispensaryRepository;
   StreamSubscription? _dispensarySubscription;
 
-  DispensaryBloc({required FirestoreService firestoreService})
-      : _firestoreService = firestoreService,
+  DispensaryBloc({required DispensaryRepository dispensaryRepository})
+      : _dispensaryRepository = dispensaryRepository,
         super(DispensaryInitial()) {
     on<LoadDispensaries>(_onLoadDispensaries);
     on<DispensaryUpdate>(_onDispensaryUpdate);
@@ -26,7 +26,7 @@ class DispensaryBloc extends Bloc<DispensaryEvent, DispensaryState> {
   ) {
     emit(DispensaryLoading());
     _dispensarySubscription?.cancel();
-    _dispensarySubscription = _firestoreService.getDispensaries().listen(
+    _dispensarySubscription = _dispensaryRepository.getDispensaries().listen(
           (dispensaries) => add(DispensaryUpdate(dispensaries: dispensaries)),
           onError: (error) =>
               add(_DispensariesUpdateFailed(message: error.toString())),

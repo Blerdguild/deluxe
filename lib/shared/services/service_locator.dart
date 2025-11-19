@@ -7,9 +7,14 @@ import 'package:deluxe/features/consumer/domain/repositories/consumer_order_repo
 import 'package:deluxe/features/consumer/presentation/bloc/consumer_order_bloc.dart';
 import 'package:deluxe/features/dashboard/bloc/dispensary_bloc.dart';
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
+import 'package:deluxe/features/dashboard/data/repositories/dispensary_repository_impl.dart';
+import 'package:deluxe/features/dashboard/domain/repositories/dispensary_repository.dart';
 import 'package:deluxe/features/dispensary/presentation/bloc/order_creation_bloc.dart';
+import 'package:deluxe/features/consumer/data/datasources/consumer_order_firestore_datasource.dart';
 import 'package:deluxe/features/farmer/data/datasources/farmer_order_datasource.dart';
+import 'package:deluxe/features/farmer/data/datasources/farmer_order_firestore_datasource.dart';
 import 'package:deluxe/features/farmer/data/datasources/harvest_datasource.dart';
+import 'package:deluxe/features/farmer/data/datasources/harvest_firestore_datasource.dart';
 import 'package:deluxe/features/farmer/data/repositories/farmer_order_repository_impl.dart';
 import 'package:deluxe/features/farmer/data/repositories/harvest_repository_impl.dart';
 import 'package:deluxe/features/farmer/domain/repositories/farmer_order_repository.dart';
@@ -43,11 +48,20 @@ void setupServiceLocator() {
   sl.registerLazySingleton(() => CloudFunctionsService());
 
   // --- Data Sources ---
-  sl.registerLazySingleton<HarvestDataSource>(() => HarvestLocalDataSource());
-  sl.registerLazySingleton<FarmerOrderDataSource>(
-      () => FarmerOrderLocalDataSource());
-  sl.registerLazySingleton<ConsumerOrderDataSource>(
-      () => ConsumerOrderLocalDataSource());
+  sl.registerFactory<HarvestDataSource>(() => HarvestFirestoreDataSource(
+        firestore: sl<FirebaseFirestore>(),
+        userId: sl<AuthService>().getCurrentUser()?.uid ?? '',
+      ));
+  sl.registerFactory<FarmerOrderDataSource>(
+      () => FarmerOrderFirestoreDataSource(
+            firestore: sl<FirebaseFirestore>(),
+            userId: sl<AuthService>().getCurrentUser()?.uid ?? '',
+          ));
+  sl.registerFactory<ConsumerOrderDataSource>(
+      () => ConsumerOrderFirestoreDataSource(
+            firestore: sl<FirebaseFirestore>(),
+            userId: sl<AuthService>().getCurrentUser()?.uid ?? '',
+          ));
 
   // --- Repositories ---
   sl.registerLazySingleton<HarvestRepository>(
@@ -64,6 +78,8 @@ void setupServiceLocator() {
           ));
   sl.registerLazySingleton<ProductRepository>(
       () => ProductRepositoryImpl(firestore: sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<DispensaryRepository>(
+      () => DispensaryRepositoryImpl(firestore: sl<FirebaseFirestore>()));
 
   // --- BLoCs ---
   sl.registerFactory(
@@ -75,7 +91,7 @@ void setupServiceLocator() {
   );
   sl.registerFactory(
     () => DispensaryBloc(
-      firestoreService: sl<FirestoreService>(),
+      dispensaryRepository: sl<DispensaryRepository>(),
     ),
   );
   sl.registerFactory(
@@ -96,6 +112,16 @@ void setupServiceLocator() {
       productRepository: sl<ProductRepository>(),
       authService: sl<AuthService>(),
       cloudFunctionsService: sl<CloudFunctionsService>(),
+    ),
+  );
+  sl.registerFactory(
+    () => ConsumerOrderBloc(
+      repository: sl<ConsumerOrderRepository>(),
+    ),
+  );
+  sl.registerFactory(
+    () => FarmerOrderBloc(
+      farmerOrderRepository: sl<FarmerOrderRepository>(),
     ),
   );
 }

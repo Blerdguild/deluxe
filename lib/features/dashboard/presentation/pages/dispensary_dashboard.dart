@@ -1,6 +1,7 @@
 import 'package:deluxe/features/consumer/presentation/pages/consumer_order_form_screen.dart';
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
 import 'package:deluxe/features/dashboard/presentation/pages/dispensary_orders_screen.dart';
+import 'package:deluxe/features/profile/presentation/pages/profile_screen.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +63,17 @@ class _MarketplaceView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Marketplace'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.account_circle),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
+                );
+              },
+            ),
+          ],
         ),
         body: BlocBuilder<ProductBloc, ProductState>(
           builder: (context, state) {

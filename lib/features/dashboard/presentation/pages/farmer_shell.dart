@@ -1,23 +1,23 @@
-import 'package:deluxe/features/dashboard/presentation/pages/consumer_dashboard.dart';
-import 'package:deluxe/features/dashboard/presentation/pages/dispensary_list_screen.dart';
-import 'package:deluxe/features/dashboard/presentation/pages/product_list_screen.dart';
+import 'package:deluxe/features/dashboard/presentation/pages/farmer_dashboard.dart';
+import 'package:deluxe/features/farmer/presentation/pages/farmer_orders_screen.dart';
+import 'package:deluxe/features/farmer/presentation/pages/inventory_screen.dart';
 import 'package:deluxe/features/profile/presentation/pages/profile_screen.dart';
 import 'package:flutter/material.dart';
 
-class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+class FarmerShell extends StatefulWidget {
+  const FarmerShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  State<FarmerShell> createState() => _FarmerShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class _FarmerShellState extends State<FarmerShell> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    ConsumerDashboard(),
-    DispensaryListScreen(),
-    ProductListScreen(),
+    FarmerDashboard(),
+    InventoryScreen(),
+    FarmerOrdersScreen(),
     ProfileScreen(),
   ];
 
@@ -30,7 +30,6 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar removed to allow screens to define their own headers
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -39,12 +38,12 @@ class _MainShellState extends State<MainShell> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.store),
-            label: 'Dispensaries',
+            icon: Icon(Icons.inventory_2),
+            label: 'Inventory',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view),
-            label: 'Products',
+            icon: Icon(Icons.list_alt),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

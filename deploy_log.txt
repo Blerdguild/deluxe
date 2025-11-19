@@ -1,0 +1,31 @@
+
+[1m[37m===[39m Deploying to 'eavzappl-32891'...[22m
+
+[36m[1mi [22m[39m deploying [1mfirestore[22m
+[36m[1mi  firestore:[22m[39m ensuring required API [1mfirestore.googleapis.com[22m is enabled...
+[36m[1mi  firestore:[22m[39m ensuring required API [1mfirestore.googleapis.com[22m is enabled...
+[36m[1mi [22m[39m [1m[36mfirestore:[39m[22m reading indexes from [1mfirestore.indexes.json[22m...
+[36m[1mi  cloud.firestore:[22m[39m checking [1mfirestore.rules[22m for compilation errors...
+[33m[1m! [22m[39m [W] 26:14 - Unused function: isDispensary.
+[32m[1m+  cloud.firestore:[22m[39m rules file [1mfirestore.rules[22m compiled successfully
+[36m[1mi  firestore:[22m[39m uploading rules [1mfirestore.rules[22m...
+[36m[1mi [22m[39m [1m[36mfirestore: [39m[22mdeploying indexes...
+[36m[1mi  firestore:[22m[39m The following indexes are defined in your project but are not present in your firestore indexes file:
+	[36m(users)[39m -- (city,ASCENDING) (country,ASCENDING) (ethnicity,ASCENDING) (gender,ASCENDING) (hostSelection,ASCENDING) (orientation,ASCENDING) (profession,ASCENDING) (province,ASCENDING) (travelSelection,ASCENDING) (age,ASCENDING) (uid,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (country,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (hostSelection,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (country,ASCENDING) (province,ASCENDING) (city,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (country,ASCENDING) (gender,ASCENDING) (orientation,ASCENDING) (profession,ASCENDING) (age,ASCENDING) (uid,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (country,ASCENDING) (province,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (uid,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (relationshipStatus,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (gender,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (ethnicity,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (orientation,ASCENDING) (age,ASCENDING) (travelSelection,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (country,ASCENDING) (ethnicity,ASCENDING) (gender,ASCENDING) (hostSelection,ASCENDING) (orientation,ASCENDING) (profession,ASCENDING) (relationshipStatus,ASCENDING) (travelSeleckion,ASCENDING) (age,ASCENDING) (uid,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+	[36m(users)[39m -- (city,ASCENDING) (country,ASCENDING) (ethnicity,ASCENDING) (gender,ASCENDING) (hostSelection,ASCENDING) (orientation,ASCENDING) (province,ASCENDING) (relationshipStatus,ASCENDING) (travelSelection,ASCENDING) (age,ASCENDING) (uid,ASCENDING)  -- [36mDensity:SPARSE_ALL [39m
+[34m?[39m [1mWould you like to delete these indexes? Selecting no will continue the rest of[22m
+[1m the deployment.[22m [2m(y/N)[22m[1A[104G[1B
+[?25h
+[1m[31mError:[39m[22m An unexpected error has occurred.

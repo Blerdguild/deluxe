@@ -1,0 +1,9 @@
+
+[1m[31mError:[39m[22m There was an error loading firebase.json:
+
+Parse Error in C:\dev\flutter_projects\deluxe\firebase.json:
+
+Unexpected token ':' at 1:14
+    "flutter": {
+             ^
+File: "C:\dev\flutter_projects\deluxe\firebase.json"

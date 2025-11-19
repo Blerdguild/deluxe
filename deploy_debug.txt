@@ -1,0 +1,90 @@
+[2025-11-19T09:08:52.830Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
+[2025-11-19T09:08:52.839Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[2025-11-19T09:08:52.840Z] > authorizing via signed-in user (kagiso.mako@gmail.com)
+[2025-11-19T09:08:52.841Z] [iam] checking project italvybz-deluxe for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[2025-11-19T09:08:52.845Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:52.845Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:52.847Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe:testIamPermissions [none]
+[2025-11-19T09:08:52.847Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe:testIamPermissions x-goog-quota-user=projects/italvybz-deluxe
+[2025-11-19T09:08:52.847Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[2025-11-19T09:08:54.637Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe:testIamPermissions 200
+[2025-11-19T09:08:54.637Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[2025-11-19T09:08:54.637Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:54.638Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:54.638Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/italvybz-deluxe/serviceAccounts/italvybz-deluxe@appspot.gserviceaccount.com:testIamPermissions [none]
+[2025-11-19T09:08:54.638Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/italvybz-deluxe/serviceAccounts/italvybz-deluxe@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[2025-11-19T09:08:56.089Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/italvybz-deluxe/serviceAccounts/italvybz-deluxe@appspot.gserviceaccount.com:testIamPermissions 200
+[2025-11-19T09:08:56.089Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/italvybz-deluxe/serviceAccounts/italvybz-deluxe@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+
+=== Deploying to 'italvybz-deluxe'...
+
+i  deploying functions 
+[2025-11-19T09:08:56.092Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:56.093Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:56.093Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe [none]
+[2025-11-19T09:08:56.750Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe 200
+[2025-11-19T09:08:56.750Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/italvybz-deluxe {"projectNumber":"425274339468","projectId":"italvybz-deluxe","lifecycleState":"ACTIVE","name":"italvybz-deluxe","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-11-17T23:44:53.629510Z"}
+i  functions: preparing codebase default for deployment 
+i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[2025-11-19T09:08:56.753Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:56.753Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:56.753Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/italvybz-deluxe/adminSdkConfig [none]
+[2025-11-19T09:08:58.016Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/italvybz-deluxe/adminSdkConfig 200
+[2025-11-19T09:08:58.017Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/italvybz-deluxe/adminSdkConfig {"projectId":"italvybz-deluxe","storageBucket":"italvybz-deluxe.firebasestorage.app"}
+[2025-11-19T09:08:58.019Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:58.020Z] Checked if tokens are valid: true, expires at: 1763546740167
+[2025-11-19T09:08:58.021Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/italvybz-deluxe/configs [none]
+[2025-11-19T09:08:59.190Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/italvybz-deluxe/configs 200
+[2025-11-19T09:08:59.190Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/italvybz-deluxe/configs {}
+[2025-11-19T09:08:59.192Z] Validating nodejs source
+!  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+!  functions: Please note that there will be breaking changes when you upgrade. 
+[2025-11-19T09:09:01.591Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Deluxe",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.5.0",
+    "thirdweb": "^5.0.0",
+    "ethers": "^6.0.0"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[2025-11-19T09:09:01.591Z] Building nodejs source
+i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[2025-11-19T09:09:01.593Z] Could not find functions.yaml. Must use http discovery
+[2025-11-19T09:09:01.608Z] Found firebase-functions binary at 'C:\dev\flutter_projects\deluxe\functions\node_modules\.bin\firebase-functions'
+Serving at port 8503
+
+Error: invalid private key, expected hex or 32 bytes, got string
+    at normPrivateKeyToScalar (C:\dev\flutter_projects\deluxe\functions\node_modules\thirdweb\node_modules\@noble\curves\abstract\weierstrass.js:265:19)
+    at Point.fromPrivateKey (C:\dev\flutter_projects\deluxe\functions\node_modules\thirdweb\node_modules\@noble\curves\abstract\weierstrass.js:382:40)
+    at Object.getPublicKey (C:\dev\flutter_projects\deluxe\functions\node_modules\thirdweb\node_modules\@noble\curves\abstract\weierstrass.js:855:22)
+    at privateKeyToAccount (C:\dev\flutter_projects\deluxe\functions\node_modules\thirdweb\dist\cjs\wallets\private-key.js:35:65)
+    at Object.<anonymous> (C:\dev\flutter_projects\deluxe\functions\index.js:23:22)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+
+[2025-11-19T09:09:05.924Z] Got response code 400; body Failed to generate manifest from function source: Error: invalid private key, expected hex or 32 bytes, got string
+
+Error: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error

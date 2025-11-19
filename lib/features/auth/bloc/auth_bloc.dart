@@ -29,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AppStarted>(_onAppStarted);
     on<SignInWithGoogleRequested>(_onSignInWithGoogleRequested);
     on<AuthLogoutRequested>(_onAuthLogoutRequested);
+    on<AuthRoleSelected>(_onAuthRoleSelected);
   }
 
   Future<void> _onAppStarted(
@@ -56,10 +57,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final uid = userCredential.user!.uid;
 
         // Check if user exists in Firestore, if not create with default role
-        // For now, we'll just fetch the role, assuming existing users or default 'consumer'
-        // In a real scenario, we'd check `userCredential.additionalUserInfo?.isNewUser`
-
+        final user = userCredential.user!;
         String role = await _authService.getUserRole(uid);
+
+        // If getUserRole returns 'consumer' (default), we should verify if the doc actually exists
+        // and create it if it's a new user.
+        final userDoc = await _firestoreService.userStream(user)?.first;
+        if (userDoc == null || !userDoc.exists) {
+          // New user! Emit state to ask for role selection.
+          emit(AuthNeedsRoleSelection(userId: uid));
+          return;
+        } else if (userDoc.data()?.containsKey('role') == true) {
+          role = userDoc.data()!['role'] as String;
+        }
 
         // Create Wallet (Idempotent call to backend)
         try {
@@ -69,10 +79,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           // We don't block login if wallet fails, but we log it.
         }
 
-        // If it's a new user (or role fetch returned default 'consumer' but we want to be sure),
-        // we might want to create the doc here if it doesn't exist.
-        // For this MVP step, we rely on getUserRole returning 'consumer' as default.
-
         emit(Authenticated(userId: uid, role: role));
       } else {
         emit(Unauthenticated());
@@ -80,6 +86,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       // TODO: Emit an AuthError state with a user-friendly message
       print("Google Sign-In failed: $e");
+      emit(Unauthenticated());
+    }
+  }
+
+  Future<void> _onAuthRoleSelected(
+    AuthRoleSelected event,
+    Emitter<AuthState> emit,
+  ) async {
+    final user = _authService.getCurrentUser();
+    if (user != null) {
+      await _firestoreService.createUser(
+        user: user,
+        role: event.role,
+      );
+
+      // Create Wallet (Idempotent call to backend)
+      try {
+        await _cloudFunctionsService.createWallet();
+      } catch (e) {
+        debugPrint("Wallet creation failed (non-fatal): $e");
+      }
+
+      emit(Authenticated(userId: user.uid, role: event.role));
+    } else {
       emit(Unauthenticated());
     }
   }

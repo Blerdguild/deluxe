@@ -14,23 +14,28 @@ const THIRDWEB_SECRET_KEY = process.env.THIRDWEB_SECRET_KEY || "YOUR_SECRET_KEY"
 const ADMIN_PRIVATE_KEY = process.env.ADMIN_PRIVATE_KEY || "YOUR_ADMIN_PRIVATE_KEY";
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "YOUR_CONTRACT_ADDRESS";
 
-// Initialize Thirdweb Client
-const client = createThirdwebClient({
-  secretKey: THIRDWEB_SECRET_KEY,
-});
+// Lazy initialization to avoid errors during deployment
+let client, adminAccount, contract;
 
-// Initialize Admin Account
-const adminAccount = privateKeyToAccount({
-  client,
-  privateKey: ADMIN_PRIVATE_KEY,
-});
+function initializeThirdweb() {
+  if (!client) {
+    client = createThirdwebClient({
+      secretKey: THIRDWEB_SECRET_KEY,
+    });
 
-// Initialize Contract
-const contract = getContract({
-  client,
-  chain: polygonAmoy,
-  address: CONTRACT_ADDRESS,
-});
+    adminAccount = privateKeyToAccount({
+      client,
+      privateKey: ADMIN_PRIVATE_KEY,
+    });
+
+    contract = getContract({
+      client,
+      chain: polygonAmoy,
+      address: CONTRACT_ADDRESS,
+    });
+  }
+  return { client, adminAccount, contract };
+}
 
 /**
  * Creates a wallet for the authenticated user.
@@ -106,6 +111,9 @@ exports.mintBatchNFT = onCall(async (request) => {
   }
 
   try {
+    // Initialize Thirdweb (lazy load)
+    const { contract: nftContract, adminAccount: admin } = initializeThirdweb();
+
     logger.info(`Minting to ${recipientAddress} with supply ${supply}`);
 
     // 2. Execute Minting Transaction (using Admin Account)
@@ -125,7 +133,7 @@ exports.mintBatchNFT = onCall(async (request) => {
 
     const receipt = await sendAndConfirmTransaction({
       transaction,
-      account: adminAccount,
+      account: admin,
     });
 
     logger.info(`Mint successful! Tx Hash: ${receipt.transactionHash}`);

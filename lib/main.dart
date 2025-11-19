@@ -51,7 +51,8 @@ class ItalVibesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
+        BlocProvider<AuthBloc>(
+            create: (_) => sl<AuthBloc>()..add(const AppStarted())),
         // Farmer Blocs
         BlocProvider<HarvestBloc>(create: (_) => sl<HarvestBloc>()),
         BlocProvider<FarmerInventoryBloc>(

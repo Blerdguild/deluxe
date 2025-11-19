@@ -22,14 +22,12 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final buttonText = purpose == ProductCardPurpose.forConsumer ? 'Buy Now' : 'Order';
+    final buttonText =
+        purpose == ProductCardPurpose.forConsumer ? 'Buy Now' : 'Order';
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      elevation: 4,
+      // Shape and elevation are handled by AppTheme
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -43,12 +41,14 @@ class ProductCard extends StatelessWidget {
                   child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
                 );
               },
-              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Center(
                   child: CircularProgressIndicator(
                     value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
                         : null,
                   ),
                 );
@@ -62,14 +62,16 @@ class ProductCard extends StatelessWidget {
               children: [
                 Text(
                   product.name,
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   product.type,
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: theme.colorScheme.primary),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -104,7 +106,8 @@ class ProductCard extends StatelessWidget {
                 if (purpose == ProductCardPurpose.forConsumer) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => ConsumerOrderFormScreen(product: product),
+                      builder: (context) =>
+                          ConsumerOrderFormScreen(product: product),
                     ),
                   );
                 } else {
