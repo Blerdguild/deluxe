@@ -1,4 +1,5 @@
 import 'package:deluxe/features/farmer/presentation/bloc/farmer_order_bloc.dart';
+import 'package:deluxe/features/farmer/presentation/pages/order_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
@@ -232,7 +233,15 @@ class _OrderCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // TODO: Navigate to order detail screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<FarmerOrderBloc>(),
+                  child: OrderDetailScreen(order: order),
+                ),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
