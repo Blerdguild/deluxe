@@ -143,7 +143,7 @@ class OrderDetailScreen extends StatelessWidget {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
+                          foregroundColor: theme.colorScheme.onPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -208,11 +208,12 @@ class OrderDetailScreen extends StatelessWidget {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Row(
+                    content: Row(
                       children: [
-                        Icon(Icons.check_circle, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text('Order accepted successfully!'),
+                        Icon(Icons.check_circle,
+                            color: Theme.of(context).colorScheme.onPrimary),
+                        const SizedBox(width: 8),
+                        const Text('Order accepted successfully!'),
                       ],
                     ),
                     backgroundColor: Colors.green,
@@ -258,11 +259,12 @@ class OrderDetailScreen extends StatelessWidget {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Row(
+                    content: Row(
                       children: [
-                        Icon(Icons.info, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text('Order declined'),
+                        Icon(Icons.info,
+                            color: Theme.of(context).colorScheme.onPrimary),
+                        const SizedBox(width: 8),
+                        const Text('Order declined'),
                       ],
                     ),
                     backgroundColor: Colors.red,

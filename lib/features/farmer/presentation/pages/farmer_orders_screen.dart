@@ -365,7 +365,7 @@ class _OrderCard extends StatelessWidget {
                           label: const Text('Accept'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

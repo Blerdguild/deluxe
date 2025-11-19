@@ -65,7 +65,7 @@ class HarvestBloc extends Bloc<HarvestEvent, HarvestState> {
         price: 0.0, // Default price, to be set by farmer later
         rating: 0.0,
         reviewCount: 0,
-        imageUrl: '', // Placeholder
+        imageUrl: event.harvest.imageUrl ?? '',
         description:
             'Harvested on ${event.harvest.harvestDate.toString().split(' ')[0]}',
         dispensaryId: '',

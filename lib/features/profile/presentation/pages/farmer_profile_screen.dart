@@ -208,7 +208,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
+                            foregroundColor: theme.colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),

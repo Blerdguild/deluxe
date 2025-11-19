@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deluxe/shared/models/farmer_profile.dart';
+import 'package:deluxe/shared/models/dispensary_profile.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -9,100 +9,97 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-class EditFarmerProfileScreen extends StatefulWidget {
-  final FarmerProfile profile;
+class EditDispensaryProfileScreen extends StatefulWidget {
+  final DispensaryProfile profile;
 
-  const EditFarmerProfileScreen({
+  const EditDispensaryProfileScreen({
     super.key,
     required this.profile,
   });
 
   @override
-  State<EditFarmerProfileScreen> createState() =>
-      _EditFarmerProfileScreenState();
+  State<EditDispensaryProfileScreen> createState() =>
+      _EditDispensaryProfileScreenState();
 }
 
-class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
+class _EditDispensaryProfileScreenState
+    extends State<EditDispensaryProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _firestore = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
   final _picker = ImagePicker();
 
-  late final TextEditingController _displayNameController;
-  late final TextEditingController _farmNameController;
+  late final TextEditingController _dispensaryNameController;
+  late final TextEditingController _ownerNameController;
   late final TextEditingController _phoneController;
-  late final TextEditingController _locationController;
-  late final TextEditingController _bioController;
-  late final TextEditingController _farmSizeController;
-  late final TextEditingController _yearsController;
-  late final TextEditingController _walletController;
+  late final TextEditingController _addressController;
   late final TextEditingController _businessLicenseController;
   late final TextEditingController _taxIdController;
+  late final TextEditingController _walletController;
 
-  String? _selectedFarmType;
   List<String> _selectedCertifications = [];
+  bool _deliveryAvailable = false;
+  bool _pickupAvailable = true;
   bool _notificationsEnabled = true;
   bool _autoAcceptOrders = false;
   bool _isSaving = false;
   bool _isUploadingImage = false;
-  String? _currentPhotoURL;
-
-  final List<String> _farmTypes = [
-    'Organic',
-    'Indoor',
-    'Outdoor',
-    'Greenhouse',
-    'Hydroponic',
-    'Mixed',
-  ];
+  String? _currentLogoURL;
 
   final List<String> _availableCertifications = [
+    'Licensed',
     'Organic',
-    'Fair Trade',
-    'Rainforest Alliance',
-    'Non-GMO',
-    'Biodynamic',
+    'Lab Tested',
     'Sustainable',
+    'Fair Trade',
+    'Local',
   ];
+
+  final List<String> _weekdays = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+
+  Map<String, String> _operatingHours = {};
 
   @override
   void initState() {
     super.initState();
-    _displayNameController =
-        TextEditingController(text: widget.profile.displayName);
-    _farmNameController = TextEditingController(text: widget.profile.farmName);
+    _dispensaryNameController =
+        TextEditingController(text: widget.profile.dispensaryName);
+    _ownerNameController =
+        TextEditingController(text: widget.profile.ownerName);
     _phoneController = TextEditingController(text: widget.profile.phoneNumber);
-    _locationController = TextEditingController(text: widget.profile.location);
-    _bioController = TextEditingController(text: widget.profile.bio);
-    _farmSizeController =
-        TextEditingController(text: widget.profile.farmSize?.toString());
-    _yearsController =
-        TextEditingController(text: widget.profile.yearsInBusiness?.toString());
-    _walletController =
-        TextEditingController(text: widget.profile.walletAddress);
+    _addressController = TextEditingController(text: widget.profile.address);
     _businessLicenseController =
         TextEditingController(text: widget.profile.businessLicense);
     _taxIdController = TextEditingController(text: widget.profile.taxId);
+    _walletController =
+        TextEditingController(text: widget.profile.walletAddress);
 
-    _selectedFarmType = widget.profile.farmType;
-    _selectedCertifications = widget.profile.certifications ?? [];
+    _selectedCertifications = widget.profile.certifications;
+    _deliveryAvailable = widget.profile.deliveryAvailable;
+    _pickupAvailable = widget.profile.pickupAvailable;
     _notificationsEnabled = widget.profile.notificationsEnabled;
     _autoAcceptOrders = widget.profile.autoAcceptOrders;
-    _currentPhotoURL = widget.profile.photoURL;
+    _currentLogoURL = widget.profile.logoURL;
+    _operatingHours = Map.from(widget.profile.operatingHours);
   }
 
   @override
   void dispose() {
-    _displayNameController.dispose();
-    _farmNameController.dispose();
+    _dispensaryNameController.dispose();
+    _ownerNameController.dispose();
     _phoneController.dispose();
-    _locationController.dispose();
-    _bioController.dispose();
-    _farmSizeController.dispose();
-    _yearsController.dispose();
-    _walletController.dispose();
+    _addressController.dispose();
     _businessLicenseController.dispose();
     _taxIdController.dispose();
+    _walletController.dispose();
     super.dispose();
   }
 
@@ -113,21 +110,20 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
 
     try {
       final updatedProfile = widget.profile.copyWith(
-        displayName: _displayNameController.text.trim(),
-        farmName: _farmNameController.text.trim(),
+        dispensaryName: _dispensaryNameController.text.trim(),
+        ownerName: _ownerNameController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
-        location: _locationController.text.trim(),
-        bio: _bioController.text.trim(),
-        farmType: _selectedFarmType,
-        farmSize: double.tryParse(_farmSizeController.text),
-        yearsInBusiness: int.tryParse(_yearsController.text),
-        walletAddress: _walletController.text.trim(),
+        address: _addressController.text.trim(),
         businessLicense: _businessLicenseController.text.trim(),
         taxId: _taxIdController.text.trim(),
+        walletAddress: _walletController.text.trim(),
         certifications: _selectedCertifications,
+        deliveryAvailable: _deliveryAvailable,
+        pickupAvailable: _pickupAvailable,
         notificationsEnabled: _notificationsEnabled,
         autoAcceptOrders: _autoAcceptOrders,
-        photoURL: _currentPhotoURL,
+        logoURL: _currentLogoURL,
+        operatingHours: _operatingHours,
       );
 
       await _firestore
@@ -202,16 +198,16 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
 
       final File file = File(compressedImage.path);
       final String fileName =
-          'profile_${widget.profile.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+          'dispensary_logo_${widget.profile.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final Reference ref =
-          _storage.ref().child('profile_images').child(fileName);
+          _storage.ref().child('dispensary_logos').child(fileName);
 
       // Upload task
       await ref.putFile(file);
       final String downloadUrl = await ref.getDownloadURL();
 
       setState(() {
-        _currentPhotoURL = downloadUrl;
+        _currentLogoURL = downloadUrl;
         _isUploadingImage = false;
       });
     } catch (e) {
@@ -227,9 +223,42 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
     }
   }
 
-  void _connectWallet() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Wallet connection coming soon!')),
+  void _setOperatingHours(String day) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final controller =
+            TextEditingController(text: _operatingHours[day] ?? '');
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardTheme.color,
+          title: Text('Set hours for $day'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: 'e.g., 9AM-9PM or Closed',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  if (controller.text.trim().isEmpty) {
+                    _operatingHours.remove(day);
+                  } else {
+                    _operatingHours[day] = controller.text.trim();
+                  }
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -240,7 +269,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('Edit Dispensary Profile'),
         elevation: 0,
         actions: [
           if (_isSaving)
@@ -269,20 +298,20 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Profile Image
+              // Logo Upload
               Center(
                 child: Stack(
                   children: [
                     CircleAvatar(
                       radius: 60,
                       backgroundColor: theme.cardTheme.color,
-                      backgroundImage: _currentPhotoURL != null
-                          ? CachedNetworkImageProvider(_currentPhotoURL!)
+                      backgroundImage: _currentLogoURL != null
+                          ? CachedNetworkImageProvider(_currentLogoURL!)
                           : null,
                       child: _isUploadingImage
                           ? const CircularProgressIndicator()
-                          : (_currentPhotoURL == null
-                              ? const Icon(Icons.agriculture, size: 50)
+                          : (_currentLogoURL == null
+                              ? const Icon(Icons.store, size: 50)
                               : null),
                     ),
                     Positioned(
@@ -311,23 +340,23 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
               const SizedBox(height: 32),
 
               // Basic Information
-              _SectionHeader(title: 'Basic Information', icon: Icons.person),
+              _SectionHeader(title: 'Basic Information', icon: Icons.store),
               const SizedBox(height: 12),
               _CustomTextField(
-                controller: _displayNameController,
-                label: 'Display Name',
-                icon: Icons.person_outline,
+                controller: _dispensaryNameController,
+                label: 'Dispensary Name',
+                icon: Icons.store_outlined,
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Please enter your name'
+                    ? 'Please enter dispensary name'
                     : null,
               ),
               const SizedBox(height: 16),
               _CustomTextField(
-                controller: _farmNameController,
-                label: 'Farm Name',
-                icon: Icons.agriculture,
+                controller: _ownerNameController,
+                label: 'Owner Name',
+                icon: Icons.person_outline,
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Please enter your farm name'
+                    ? 'Please enter owner name'
                     : null,
               ),
 
@@ -344,70 +373,10 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
               ),
               const SizedBox(height: 16),
               _CustomTextField(
-                controller: _locationController,
-                label: 'Location',
+                controller: _addressController,
+                label: 'Address',
                 icon: Icons.location_on,
-              ),
-
-              const SizedBox(height: 24),
-
-              // Farm Details
-              _SectionHeader(title: 'Farm Details', icon: Icons.eco),
-              const SizedBox(height: 12),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(
-                  color: theme.cardTheme.color,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: DropdownButtonFormField<String>(
-                  value: _selectedFarmType,
-                  decoration: const InputDecoration(
-                    labelText: 'Farm Type',
-                    prefixIcon: Icon(Icons.category),
-                    border: InputBorder.none,
-                  ),
-                  dropdownColor: theme.cardTheme.color,
-                  items: _farmTypes.map((type) {
-                    return DropdownMenuItem(
-                      value: type,
-                      child: Text(type),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedFarmType = value);
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _CustomTextField(
-                      controller: _farmSizeController,
-                      label: 'Size (acres)',
-                      icon: Icons.straighten,
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _CustomTextField(
-                      controller: _yearsController,
-                      label: 'Years in Biz',
-                      icon: Icons.calendar_today,
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _CustomTextField(
-                controller: _bioController,
-                label: 'Farm Description',
-                icon: Icons.description,
-                maxLines: 4,
+                maxLines: 2,
               ),
 
               const SizedBox(height: 24),
@@ -447,9 +416,8 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
                         const SizedBox(width: 8),
                         Text(
                           'Certifications',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[500],
-                          ),
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(color: Colors.grey[500]),
                         ),
                       ],
                     ),
@@ -492,6 +460,68 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
 
               const SizedBox(height: 24),
 
+              // Operating Hours
+              _SectionHeader(title: 'Operating Hours', icon: Icons.access_time),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: theme.cardTheme.color,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: _weekdays.map((day) {
+                    return ListTile(
+                      leading:
+                          Icon(Icons.calendar_today, color: theme.primaryColor),
+                      title: Text(day),
+                      subtitle: Text(_operatingHours[day] ?? 'Not set'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () => _setOperatingHours(day),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Service Options
+              _SectionHeader(
+                  title: 'Service Options', icon: Icons.local_shipping),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: theme.cardTheme.color,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      title: const Text('Delivery Available'),
+                      subtitle: const Text('Offer delivery service'),
+                      value: _deliveryAvailable,
+                      onChanged: (value) {
+                        setState(() => _deliveryAvailable = value);
+                      },
+                      secondary: Icon(Icons.delivery_dining,
+                          color: theme.primaryColor),
+                    ),
+                    SwitchListTile(
+                      title: const Text('Pickup Available'),
+                      subtitle: const Text('Allow in-store pickup'),
+                      value: _pickupAvailable,
+                      onChanged: (value) {
+                        setState(() => _pickupAvailable = value);
+                      },
+                      secondary: Icon(Icons.store, color: theme.primaryColor),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
               // Blockchain
               _SectionHeader(
                   title: 'Blockchain', icon: Icons.account_balance_wallet),
@@ -514,7 +544,12 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
                     ),
                     child: IconButton(
                       icon: Icon(Icons.link, color: theme.primaryColor),
-                      onPressed: _connectWallet,
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Wallet connection coming soon!')),
+                        );
+                      },
                       tooltip: 'Connect Wallet',
                     ),
                   ),
@@ -542,10 +577,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
                       },
                       secondary:
                           Icon(Icons.notifications, color: theme.primaryColor),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 4),
                     ),
-                    // No divider here, just clean spacing if needed
                     SwitchListTile(
                       title: const Text('Auto-accept Orders'),
                       subtitle: const Text(
@@ -556,8 +588,6 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
                       },
                       secondary:
                           Icon(Icons.auto_awesome, color: theme.primaryColor),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 4),
                     ),
                   ],
                 ),
@@ -604,7 +634,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
   }
 }
 
-// Clean Section Header - Matches AddHarvestScreen
+// Section Header Widget
 class _SectionHeader extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -633,7 +663,7 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// Clean Custom Text Field - Matches AddHarvestScreen EXACTLY
+// Custom Text Field Widget
 class _CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -672,7 +702,7 @@ class _CustomTextField extends StatelessWidget {
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none, // Borderless look
+            borderSide: BorderSide.none,
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

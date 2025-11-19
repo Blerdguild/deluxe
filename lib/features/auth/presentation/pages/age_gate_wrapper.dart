@@ -10,6 +10,8 @@ import 'package:deluxe/features/auth/bloc/auth_bloc.dart';
 import 'package:deluxe/features/auth/presentation/pages/login_screen.dart';
 import 'package:deluxe/features/auth/presentation/pages/role_selection_screen.dart';
 import 'package:deluxe/features/dashboard/presentation/pages/dashboard_screen.dart';
+import 'package:deluxe/features/dashboard/presentation/pages/farmer_shell.dart';
+import 'package:deluxe/features/dashboard/presentation/pages/dispensary_main_shell.dart';
 
 class AgeGateWrapper extends StatelessWidget {
   const AgeGateWrapper({super.key});
@@ -28,8 +30,16 @@ class AgeGateWrapper extends StatelessWidget {
 
         // FIX: The class name is 'Authenticated'.
         if (state is Authenticated) {
-          // If the user is logged in, proceed to the main dashboard.
-          return const DashboardScreen();
+          // Route based on user role
+          switch (state.role) {
+            case 'farmer':
+              return const FarmerShell();
+            case 'dispensary':
+              return const DispensaryMainShell();
+            case 'consumer':
+            default:
+              return const DashboardScreen();
+          }
         }
 
         if (state is AuthNeedsRoleSelection) {

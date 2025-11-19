@@ -2,6 +2,12 @@ import 'package:deluxe/features/farmer/domain/entities/harvest.dart';
 import 'package:deluxe/features/farmer/presentation/bloc/harvest_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 class AddHarvestScreen extends StatefulWidget {
   const AddHarvestScreen({super.key});
@@ -19,6 +25,11 @@ class _AddHarvestScreenState extends State<AddHarvestScreen> {
   final _cbdController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  final _storage = FirebaseStorage.instance;
+  final _picker = ImagePicker();
+  bool _isUploadingImage = false;
+  String? _currentImageURL;
+
   String _selectedType = 'Indica';
   final List<String> _types = ['Indica', 'Sativa', 'Hybrid', 'CBD'];
 
@@ -33,6 +44,61 @@ class _AddHarvestScreenState extends State<AddHarvestScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+      );
+
+      if (image == null) return;
+
+      setState(() => _isUploadingImage = true);
+
+      // Compress image
+      final dir = await getTemporaryDirectory();
+      final targetPath =
+          p.join(dir.path, '${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+      final XFile? compressedImage =
+          await FlutterImageCompress.compressAndGetFile(
+        image.path,
+        targetPath,
+        quality: 70,
+        minWidth: 800,
+        minHeight: 800,
+      );
+
+      if (compressedImage == null) throw Exception('Image compression failed');
+
+      final File file = File(compressedImage.path);
+      final String fileName =
+          'harvest_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final Reference ref =
+          _storage.ref().child('harvest_images').child(fileName);
+
+      // Upload task
+      await ref.putFile(file);
+      final String downloadUrl = await ref.getDownloadURL();
+
+      setState(() {
+        _currentImageURL = downloadUrl;
+        _isUploadingImage = false;
+      });
+    } catch (e) {
+      setState(() => _isUploadingImage = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error uploading image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   void _saveHarvest() {
     if (_formKey.currentState!.validate()) {
       final newHarvest = Harvest(
@@ -40,6 +106,7 @@ class _AddHarvestScreenState extends State<AddHarvestScreen> {
         strainName: _strainNameController.text,
         weight: double.parse(_weightController.text),
         harvestDate: DateTime.now(),
+        imageUrl: _currentImageURL,
       );
 
       context.read<HarvestBloc>().add(AddHarvest(newHarvest));
@@ -47,11 +114,12 @@ class _AddHarvestScreenState extends State<AddHarvestScreen> {
       // Show success feedback
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8),
-              Text('Harvest added successfully!'),
+              Icon(Icons.check_circle,
+                  color: Theme.of(context).colorScheme.onPrimary),
+              const SizedBox(width: 8),
+              const Text('Harvest added successfully!'),
             ],
           ),
           backgroundColor: Colors.green,
@@ -83,6 +151,54 @@ class _AddHarvestScreenState extends State<AddHarvestScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                // Image Upload Section
+                Center(
+                  child: GestureDetector(
+                    onTap: _isUploadingImage ? null : _pickImage,
+                    child: Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: theme.cardTheme.color,
+                        borderRadius: BorderRadius.circular(16),
+                        image: _currentImageURL != null
+                            ? DecorationImage(
+                                image: NetworkImage(_currentImageURL!),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                        border: Border.all(
+                          color: theme.primaryColor.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: _isUploadingImage
+                          ? const Center(child: CircularProgressIndicator())
+                          : (_currentImageURL == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_a_photo,
+                                        size: 40,
+                                        color: theme.primaryColor
+                                            .withOpacity(0.5)),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Add Harvest Photo',
+                                      style: TextStyle(
+                                        color:
+                                            theme.primaryColor.withOpacity(0.5),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : null),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 // Header Section
                 Container(
                   padding: const EdgeInsets.all(16),

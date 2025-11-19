@@ -274,11 +274,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   Navigator.pop(dialogContext);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Row(
+                      content: Row(
                         children: [
-                          Icon(Icons.check_circle, color: Colors.white),
-                          SizedBox(width: 8),
-                          Text('Minting started...'),
+                          Icon(Icons.check_circle,
+                              color: Theme.of(context).colorScheme.onPrimary),
+                          const SizedBox(width: 8),
+                          const Text('Minting started...'),
                         ],
                       ),
                       backgroundColor: theme.primaryColor,
@@ -327,7 +328,7 @@ class _FilterChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[400],
+            color: isSelected ? theme.colorScheme.onPrimary : Colors.grey[400],
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),

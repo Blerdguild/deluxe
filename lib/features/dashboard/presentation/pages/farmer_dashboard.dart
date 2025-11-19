@@ -482,8 +482,8 @@ class _AnalyticsChart extends StatelessWidget {
                 return touchedBarSpots.map((barSpot) {
                   return LineTooltipItem(
                     NumberFormat.currency(symbol: '\$').format(barSpot.y),
-                    const TextStyle(
-                      color: Colors.white,
+                    TextStyle(
+                      color: theme.colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   );

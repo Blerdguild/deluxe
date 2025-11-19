@@ -18,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.redAccent,
-            foregroundColor: Colors.white,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
           ),
           onPressed: () {
             // This will now work correctly because AuthLogoutRequested is properly defined
@@ -31,4 +31,3 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
-
