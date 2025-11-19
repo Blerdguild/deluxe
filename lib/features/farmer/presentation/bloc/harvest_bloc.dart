@@ -5,6 +5,7 @@ import 'package:deluxe/core/repositories/product_repository.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 import 'package:deluxe/core/firebase/auth_service.dart';
 import 'package:deluxe/core/firebase/cloud_functions_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 part 'harvest_event.dart';
@@ -55,8 +56,24 @@ class HarvestBloc extends Bloc<HarvestEvent, HarvestState> {
       // Create corresponding Product in Firestore
       final currentUser = _authService.getCurrentUser();
       final farmerId = currentUser?.uid ?? 'unknown_farmer';
-      final farmerName =
-          currentUser?.displayName ?? currentUser?.email ?? 'Unknown Farmer';
+
+      // Fetch farm name from user profile
+      String farmerName = 'Unknown Farmer';
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(farmerId)
+            .get();
+        if (userDoc.exists) {
+          final data = userDoc.data();
+          farmerName =
+              data?['farmName'] ?? data?['displayName'] ?? 'Unknown Farmer';
+        }
+      } catch (e) {
+        // Fallback to display name if Firestore fetch fails
+        farmerName =
+            currentUser?.displayName ?? currentUser?.email ?? 'Unknown Farmer';
+      }
 
       final product = Product(
         id: event.harvest.id,
