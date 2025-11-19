@@ -1,6 +1,10 @@
 import 'package:deluxe/shared/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:deluxe/shared/models/order_model.dart';
+import 'package:uuid/uuid.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -15,25 +19,85 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  int _quantity = 1;
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  final _uuid = const Uuid();
 
-  void _placeOrder() {
-    // TODO: Implement order placement logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.check_circle,
-                color: Theme.of(context).colorScheme.onPrimary),
-            const SizedBox(width: 8),
-            Text('Order placed: ${_quantity}x ${widget.product.name}'),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-    Navigator.pop(context);
+  int _quantity = 1;
+  bool _isPlacingOrder = false;
+
+  Future<void> _placeOrder() async {
+    setState(() => _isPlacingOrder = true);
+
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Fetch dispensary name from user profile
+      String dispensaryName = 'Unknown Dispensary';
+      try {
+        final userDoc =
+            await _firestore.collection('users').doc(currentUser.uid).get();
+        if (userDoc.exists) {
+          final data = userDoc.data();
+          dispensaryName = data?['dispensaryName'] ??
+              data?['displayName'] ??
+              'Unknown Dispensary';
+        }
+      } catch (e) {
+        dispensaryName = currentUser.displayName ??
+            currentUser.email ??
+            'Unknown Dispensary';
+      }
+
+      final order = OrderModel(
+        id: _uuid.v4(),
+        consumerId: currentUser.uid, // Dispensary is the consumer
+        sellerId: widget.product.farmerId, // Farmer is the seller
+        items: [widget.product],
+        totalPrice: widget.product.price * _quantity,
+        status: 'Pending',
+        createdAt: DateTime.now(),
+        dispensaryName: dispensaryName,
+      );
+
+      await _firestore.collection('orders').doc(order.id).set(order.toJson());
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle,
+                    color: Theme.of(context).colorScheme.onPrimary),
+                const SizedBox(width: 8),
+                Text(
+                    'Wholesale order placed: $_quantity x ${widget.product.name}'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error placing order: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isPlacingOrder = false);
+      }
+    }
   }
 
   @override
@@ -305,11 +369,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton.icon(
-                      onPressed: _placeOrder,
-                      icon: const Icon(Icons.shopping_cart, size: 24),
-                      label: const Text(
-                        'Place Wholesale Order',
-                        style: TextStyle(
+                      onPressed: _isPlacingOrder ? null : _placeOrder,
+                      icon: _isPlacingOrder
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Icon(Icons.shopping_cart, size: 24),
+                      label: Text(
+                        _isPlacingOrder
+                            ? 'Placing Order...'
+                            : 'Place Wholesale Order',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
