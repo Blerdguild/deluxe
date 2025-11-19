@@ -6,6 +6,7 @@ import 'package:deluxe/shared/models/product_model.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class DispensaryDashboard extends StatefulWidget {
   const DispensaryDashboard({super.key});
@@ -115,6 +116,8 @@ class _ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -130,22 +133,37 @@ class _ProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(12.0)),
-                  image: product.imageUrl.isNotEmpty
-                      ? DecorationImage(
-                          image: NetworkImage(product.imageUrl),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: product.imageUrl.isEmpty
-                    ? const Center(
-                        child: Icon(Icons.image_not_supported, size: 50))
-                    : null,
+              child: ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12.0)),
+                child: product.imageUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: product.imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        placeholder: (context, url) => Container(
+                          color: theme.primaryColor.withOpacity(0.1),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: theme.primaryColor.withOpacity(0.1),
+                          child: Icon(
+                            Icons.local_florist,
+                            size: 40,
+                            color: theme.primaryColor.withOpacity(0.5),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        color: theme.primaryColor.withOpacity(0.1),
+                        child: Icon(
+                          Icons.local_florist,
+                          size: 40,
+                          color: theme.primaryColor.withOpacity(0.5),
+                        ),
+                      ),
               ),
             ),
             Padding(
@@ -155,22 +173,22 @@ class _ProductCard extends StatelessWidget {
                 children: [
                   Text(
                     product.name,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: theme.textTheme.titleMedium,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '\$${product.price.toStringAsFixed(2)} / lb',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'By: ${product.farmerName}',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: theme.textTheme.bodySmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
