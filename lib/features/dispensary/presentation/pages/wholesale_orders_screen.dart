@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:deluxe/shared/models/order_model.dart';
 import 'package:intl/intl.dart';
+import 'package:deluxe/features/dispensary/presentation/pages/wholesale_order_detail_screen.dart';
 
 class WholesaleOrdersScreen extends StatelessWidget {
   const WholesaleOrdersScreen({super.key});
@@ -144,11 +145,10 @@ class _OrderCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            // TODO: Navigate to order detail screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Order details coming soon!'),
-                behavior: SnackBarBehavior.floating,
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WholesaleOrderDetailScreen(order: order),
               ),
             );
           },
