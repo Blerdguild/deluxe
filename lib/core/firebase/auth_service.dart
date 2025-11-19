@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
@@ -33,7 +34,8 @@ class AuthService {
     }
 
     // Obtain the auth details from the request.
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
     // Create a new credential for Firebase.
     final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -50,5 +52,21 @@ class AuthService {
     // We sign out from both services to ensure a clean logout.
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
+  }
+
+  /// Fetches the user's role from the 'users' collection in Firestore.
+  /// Returns 'consumer' if the user document or role field doesn't exist.
+  Future<String> getUserRole(String uid) async {
+    try {
+      final doc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (doc.exists && doc.data() != null && doc.data()!.containsKey('role')) {
+        return doc.data()!['role'] as String;
+      }
+    } catch (e) {
+      // Log error or handle appropriately
+      print('Error fetching user role: $e');
+    }
+    return 'consumer'; // Default role
   }
 }

@@ -26,3 +26,13 @@ class DeleteHarvest extends HarvestEvent {
   @override
   List<Object> get props => [harvestId];
 }
+
+class TokenizeHarvest extends HarvestEvent {
+  final Harvest harvest;
+  final int supply;
+
+  const TokenizeHarvest({required this.harvest, required this.supply});
+
+  @override
+  List<Object> get props => [harvest, supply];
+}

@@ -13,8 +13,7 @@ class DashboardScreen extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is Authenticated) {
-          // TODO: Get real user role from state or user service
-          const userRole = 'consumer';
+          final userRole = state.role;
 
           switch (userRole) {
             case 'consumer':

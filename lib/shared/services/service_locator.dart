@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deluxe/core/firebase/firestore_service.dart';
+import 'package:deluxe/core/firebase/cloud_functions_service.dart';
 import 'package:deluxe/features/consumer/data/datasources/consumer_order_datasource.dart';
 import 'package:deluxe/features/consumer/data/repositories/consumer_order_repository_impl.dart';
 import 'package:deluxe/features/consumer/domain/repositories/consumer_order_repository.dart';
@@ -39,6 +40,7 @@ void setupServiceLocator() {
   sl.registerLazySingleton(() => FirestoreService(
         firestore: sl<FirebaseFirestore>(),
       ));
+  sl.registerLazySingleton(() => CloudFunctionsService());
 
   // --- Data Sources ---
   sl.registerLazySingleton<HarvestDataSource>(() => HarvestLocalDataSource());
@@ -68,6 +70,7 @@ void setupServiceLocator() {
     () => AuthBloc(
       authService: sl<AuthService>(),
       firestoreService: sl<FirestoreService>(),
+      cloudFunctionsService: sl<CloudFunctionsService>(),
     ),
   );
   sl.registerFactory(
@@ -85,12 +88,14 @@ void setupServiceLocator() {
       harvestRepository: sl<HarvestRepository>(),
       productRepository: sl<ProductRepository>(),
       authService: sl<AuthService>(),
+      cloudFunctionsService: sl<CloudFunctionsService>(),
     ),
   );
   sl.registerFactory(
     () => FarmerInventoryBloc(
       productRepository: sl<ProductRepository>(),
       authService: sl<AuthService>(),
+      cloudFunctionsService: sl<CloudFunctionsService>(),
     ),
   );
 }

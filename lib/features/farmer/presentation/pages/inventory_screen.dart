@@ -1,5 +1,6 @@
 import 'package:deluxe/features/farmer/presentation/bloc/farmer_inventory_bloc.dart';
 import 'package:deluxe/features/farmer/presentation/pages/edit_product_screen.dart';
+import 'package:deluxe/shared/models/product_model.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,18 +37,31 @@ class InventoryScreen extends StatelessWidget {
                       title: Text(product.name),
                       subtitle:
                           Text('Price: \$${product.price.toStringAsFixed(2)}'),
-                      trailing: const Icon(Icons.edit),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                EditProductScreen(product: product),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.token),
+                            tooltip: 'Tokenize',
+                            onPressed: () =>
+                                _showTokenizeDialog(context, product),
                           ),
-                        ).then((_) {
-                          // Refresh inventory when coming back (though stream should handle it)
-                          // context.read<FarmerInventoryBloc>().add(LoadInventory());
-                        });
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditProductScreen(product: product),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        // Optional: Navigate to details
                       },
                     ),
                   );
@@ -58,6 +72,58 @@ class InventoryScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Future<void> _showTokenizeDialog(
+      BuildContext context, Product product) async {
+    final supplyController = TextEditingController(text: '100');
+    return showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('Tokenize ${product.name}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Create NFTs for this harvest.'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: supplyController,
+                decoration: const InputDecoration(
+                  labelText: 'Supply (Quantity)',
+                  hintText: 'e.g. 100',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final supply = int.tryParse(supplyController.text) ?? 0;
+                if (supply > 0) {
+                  // Use the Bloc provided by the parent BlocProvider
+                  context.read<FarmerInventoryBloc>().add(
+                        TokenizeProduct(product: product, supply: supply),
+                      );
+                  Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Minting started... Check console/wallet.'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Mint'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

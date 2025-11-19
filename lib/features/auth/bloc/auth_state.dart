@@ -17,13 +17,16 @@ class AuthInitial extends AuthState {}
 class Authenticated extends AuthState {
   // In a real app, you would hold a User model here.
   final String userId;
+  final String role;
 
-  const Authenticated({required this.userId});
+  const Authenticated({
+    required this.userId,
+    required this.role,
+  });
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [userId, role];
 }
 
 /// State representing a user who is not authenticated.
 class Unauthenticated extends AuthState {}
-

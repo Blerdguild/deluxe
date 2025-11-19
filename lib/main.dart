@@ -13,6 +13,16 @@ import 'core/firebase/firebase_init.dart';
 import 'features/auth/presentation/pages/age_gate_wrapper.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 
+// Farmer feature components.
+import 'features/farmer/presentation/bloc/harvest_bloc.dart';
+import 'features/farmer/presentation/bloc/farmer_inventory_bloc.dart';
+import 'features/farmer/presentation/bloc/farmer_order_bloc.dart';
+
+// Dashboard/Consumer/Dispensary components.
+import 'features/dashboard/bloc/product_bloc.dart';
+import 'features/consumer/presentation/bloc/consumer_order_bloc.dart';
+import 'features/dashboard/bloc/dispensary_bloc.dart';
+
 void main() async {
   // Ensure Flutter engine bindings are initialized before calling native code.
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,14 +49,23 @@ class ItalVibesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      // Create (and retrieve from GetIt) the AuthBloc, making it available to the widget tree.
-      create: (_) => sl<AuthBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
+        // Farmer Blocs
+        BlocProvider<HarvestBloc>(create: (_) => sl<HarvestBloc>()),
+        BlocProvider<FarmerInventoryBloc>(
+            create: (_) => sl<FarmerInventoryBloc>()),
+        BlocProvider<FarmerOrderBloc>(create: (_) => sl<FarmerOrderBloc>()),
+        // Dispensary/Consumer Blocs
+        BlocProvider<ProductBloc>(create: (_) => sl<ProductBloc>()),
+        BlocProvider<ConsumerOrderBloc>(create: (_) => sl<ConsumerOrderBloc>()),
+        BlocProvider<DispensaryBloc>(create: (_) => sl<DispensaryBloc>()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'ITALVIBES',
-        theme: AppTheme.darkTheme, // Use the new dark theme
-        // The AgeGateWrapper will be the first thing the user sees.
+        theme: AppTheme.darkTheme,
         home: const AgeGateWrapper(),
       ),
     );

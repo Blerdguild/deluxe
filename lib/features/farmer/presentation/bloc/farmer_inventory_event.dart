@@ -17,3 +17,13 @@ class UpdateProduct extends FarmerInventoryEvent {
   @override
   List<Object> get props => [product];
 }
+
+class TokenizeProduct extends FarmerInventoryEvent {
+  final Product product;
+  final int supply;
+
+  const TokenizeProduct({required this.product, required this.supply});
+
+  @override
+  List<Object> get props => [product, supply];
+}

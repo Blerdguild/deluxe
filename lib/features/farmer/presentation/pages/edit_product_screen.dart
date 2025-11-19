@@ -103,6 +103,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             dispensaryId: widget.product.dispensaryId,
                             farmerId: widget.product.farmerId,
                             farmerName: widget.product.farmerName,
+                            weight: widget.product.weight,
                           );
 
                           context

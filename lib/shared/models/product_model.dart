@@ -12,6 +12,7 @@ class Product {
   final String dispensaryId;
   final String farmerId;
   final String farmerName;
+  final double weight;
 
   Product({
     required this.id,
@@ -25,6 +26,7 @@ class Product {
     required this.dispensaryId,
     required this.farmerId,
     required this.farmerName,
+    required this.weight,
   });
 
   factory Product.fromSnapshot(DocumentSnapshot doc) {
@@ -41,6 +43,7 @@ class Product {
       dispensaryId: data['dispensaryId'] ?? '',
       farmerId: data['farmerId'] ?? '',
       farmerName: data['farmerName'] ?? '',
+      weight: (data['weight'] ?? 0.0).toDouble(),
     );
   }
 
@@ -56,6 +59,7 @@ class Product {
       'dispensaryId': dispensaryId,
       'farmerId': farmerId,
       'farmerName': farmerName,
+      'weight': weight,
     };
   }
 }

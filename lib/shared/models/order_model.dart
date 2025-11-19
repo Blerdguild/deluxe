@@ -42,6 +42,7 @@ class OrderModel {
                     dispensaryId: item['dispensaryId'] ?? '',
                     farmerId: item['farmerId'] ?? '',
                     farmerName: item['farmerName'] ?? '',
+                    weight: (item['weight'] ?? 0.0).toDouble(),
                   ))
               .toList() ??
           [],
