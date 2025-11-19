@@ -2,6 +2,7 @@ import 'package:deluxe/core/repositories/product_repository.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:deluxe/features/dispensary/presentation/pages/product_detail_screen.dart';
 
 class BrowseProductsScreen extends StatefulWidget {
   const BrowseProductsScreen({super.key});
@@ -212,11 +213,10 @@ class _ProductCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // TODO: Navigate to product detail screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Product detail for ${product.name} coming soon!'),
-            behavior: SnackBarBehavior.floating,
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailScreen(product: product),
           ),
         );
       },
