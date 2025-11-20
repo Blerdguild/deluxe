@@ -17,7 +17,7 @@ class OrderDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final currencyFormat = NumberFormat.currency(symbol: 'R');
     final dateFormat = DateFormat('MMM dd, yyyy • hh:mm a');
 
     return Scaffold(
@@ -590,7 +590,7 @@ class _ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final currencyFormat = NumberFormat.currency(symbol: 'R');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),

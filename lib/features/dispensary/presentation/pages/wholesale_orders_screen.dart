@@ -253,7 +253,7 @@ class _OrderCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '\$${(product.price * product.quantity).toStringAsFixed(2)}',
+                            'R${(product.price * product.quantity).toStringAsFixed(2)}',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: theme.primaryColor,
@@ -276,7 +276,7 @@ class _OrderCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '\$${order.totalPrice.toStringAsFixed(2)}',
+                      'R${order.totalPrice.toStringAsFixed(2)}',
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.primaryColor,

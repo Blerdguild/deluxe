@@ -231,7 +231,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '\$${widget.product.price.toStringAsFixed(2)}',
+                              'R${widget.product.price.toStringAsFixed(2)}',
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 color: theme.primaryColor,
                                 fontWeight: FontWeight.bold,
@@ -368,7 +368,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         ),
                         Text(
-                          '\$${totalPrice.toStringAsFixed(2)}',
+                          'R${totalPrice.toStringAsFixed(2)}',
                           style: theme.textTheme.headlineSmall?.copyWith(
                             color: theme.colorScheme.onPrimary,
                             fontWeight: FontWeight.bold,

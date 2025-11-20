@@ -6,6 +6,7 @@ abstract class ProductRepository {
   Stream<List<Product>> getProducts();
   Stream<List<Product>> getProductsByFarmer(String farmerId);
   Future<void> updateProduct(Product product);
+  Stream<List<Product>> getRetailProducts();
 }
 
 class ProductRepositoryImpl implements ProductRepository {
@@ -46,5 +47,18 @@ class ProductRepositoryImpl implements ProductRepository {
         .collection('products')
         .doc(product.id)
         .update(product.toJson());
+  }
+
+  @override
+  Stream<List<Product>> getRetailProducts() {
+    // Fetch products where dispensaryId is NOT empty
+    // Note: Firestore requires an index for this if we mix orderBy
+    return _firestore
+        .collection('products')
+        .where('dispensaryId', isNotEqualTo: '')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => Product.fromSnapshot(doc)).toList();
+    });
   }
 }

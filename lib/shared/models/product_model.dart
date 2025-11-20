@@ -66,4 +66,36 @@ class Product {
       'quantity': quantity,
     };
   }
+
+  Product copyWith({
+    String? id,
+    String? name,
+    String? type,
+    double? price,
+    double? rating,
+    int? reviewCount,
+    String? imageUrl,
+    String? description,
+    String? dispensaryId,
+    String? farmerId,
+    String? farmerName,
+    double? weight,
+    int? quantity,
+  }) {
+    return Product(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      price: price ?? this.price,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
+      imageUrl: imageUrl ?? this.imageUrl,
+      description: description ?? this.description,
+      dispensaryId: dispensaryId ?? this.dispensaryId,
+      farmerId: farmerId ?? this.farmerId,
+      farmerName: farmerName ?? this.farmerName,
+      weight: weight ?? this.weight,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 }

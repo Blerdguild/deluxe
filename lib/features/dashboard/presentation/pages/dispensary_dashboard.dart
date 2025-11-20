@@ -179,7 +179,7 @@ class _ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${product.price.toStringAsFixed(2)} / lb',
+                    'R${product.price.toStringAsFixed(2)}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.primaryColor,
                       fontWeight: FontWeight.bold,

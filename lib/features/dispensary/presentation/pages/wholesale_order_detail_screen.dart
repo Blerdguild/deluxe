@@ -226,7 +226,7 @@ class WholesaleOrderDetailScreen extends StatelessWidget {
                                   ],
                                 ),
                                 Text(
-                                  '\$${(product.price * product.quantity).toStringAsFixed(2)}',
+                                  'R${(product.price * product.quantity).toStringAsFixed(2)}',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     color: theme.primaryColor,
                                     fontWeight: FontWeight.bold,
@@ -264,7 +264,7 @@ class WholesaleOrderDetailScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '\$${order.totalPrice.toStringAsFixed(2)}',
+                              'R${order.totalPrice.toStringAsFixed(2)}',
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 color: Colors.white.withOpacity(0.9),
                               ),
@@ -283,7 +283,7 @@ class WholesaleOrderDetailScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '\$${order.totalPrice.toStringAsFixed(2)}',
+                              'R${order.totalPrice.toStringAsFixed(2)}',
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

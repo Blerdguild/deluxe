@@ -32,6 +32,61 @@ class FarmerOrderRepositoryImpl implements FarmerOrderRepository {
 
   @override
   Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    final orderDoc = await _firestore.collection('orders').doc(orderId).get();
+    if (!orderDoc.exists) return;
+
+    final order = OrderModel.fromSnapshot(orderDoc);
+
+    // 1. Handle Inventory Deduction on Acceptance
+    if (newStatus == 'Accepted' && order.status != 'Accepted') {
+      final batch = _firestore.batch();
+
+      for (final item in order.items) {
+        // Deduct from Farmer's inventory (original product)
+        final productRef = _firestore.collection('products').doc(item.id);
+        batch.update(productRef, {
+          'quantity': FieldValue.increment(-item.quantity),
+        });
+      }
+
+      // Update order status
+      final orderRef = _firestore.collection('orders').doc(orderId);
+      batch.update(orderRef, {'status': newStatus});
+
+      await batch.commit();
+      return;
+    }
+
+    // 2. Handle Dispensary Inventory Addition on Delivery
+    if (newStatus == 'Delivered' && order.status != 'Delivered') {
+      final batch = _firestore.batch();
+
+      for (final item in order.items) {
+        // Create new product for Dispensary
+        final newProductRef = _firestore.collection('products').doc();
+
+        final newProductData = item.toJson();
+        // Override specific fields for the new owner (Dispensary)
+        newProductData['dispensaryId'] = order.consumerId;
+        newProductData['quantity'] = item.quantity;
+        // Reset ratings for the new listing
+        newProductData['rating'] = 0.0;
+        newProductData['reviewCount'] = 0;
+        // Optionally, we could set a default markup price here, e.g., item.price * 1.5
+        // For now, we keep the wholesale price as the base
+
+        batch.set(newProductRef, newProductData);
+      }
+
+      // Update order status
+      final orderRef = _firestore.collection('orders').doc(orderId);
+      batch.update(orderRef, {'status': newStatus});
+
+      await batch.commit();
+      return;
+    }
+
+    // Default update for other statuses (e.g., Pending -> Declined, Shipped)
     await _firestore.collection('orders').doc(orderId).update({
       'status': newStatus,
     });

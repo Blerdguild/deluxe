@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
 import 'package:uuid/uuid.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ConsumerOrderFormScreen extends StatelessWidget {
   final Product product;
@@ -35,17 +36,28 @@ class _ConsumerOrderFormViewState extends State<_ConsumerOrderFormView> {
   void _submitOrder() {
     final quantity = int.tryParse(_quantityController.text) ?? 1;
     final uuid = const Uuid();
+    final user = FirebaseAuth.instance.currentUser;
 
-    // Create a mock consumer order
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('You must be logged in to place an order')),
+      );
+      return;
+    }
+
+    // Create a real consumer order
     final newOrder = OrderModel(
       id: uuid.v4(),
-      consumerId: 'current_user_id', // Should be real user ID
-      sellerId: widget.product.farmerId,
-      items: [widget.product], // Simplified for now
+      consumerId: user.uid,
+      sellerId: widget.product.dispensaryId, // Seller is the Dispensary
+      items: [
+        widget.product.copyWith(quantity: quantity)
+      ], // Update product quantity in the order item
       totalPrice: widget.product.price * quantity,
       status: 'Pending',
       createdAt: DateTime.now(),
-      dispensaryName: 'Self', // Or fetch real user name
+      dispensaryName: user.displayName ?? 'Consumer', // Buyer's name
     );
 
     context.read<ConsumerOrderBloc>().add(PlaceConsumerOrder(order: newOrder));

@@ -145,7 +145,7 @@ class FarmerDashboard extends StatelessWidget {
                       _SummaryCard(
                         title: 'Earnings',
                         valueBuilder: (context) => Text(
-                          NumberFormat.currency(symbol: '\$').format(earnings),
+                          NumberFormat.currency(symbol: 'R').format(earnings),
                           style: theme.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.green,
@@ -481,7 +481,7 @@ class _AnalyticsChart extends StatelessWidget {
               getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                 return touchedBarSpots.map((barSpot) {
                   return LineTooltipItem(
-                    NumberFormat.currency(symbol: '\$').format(barSpot.y),
+                    NumberFormat.currency(symbol: 'R').format(barSpot.y),
                     TextStyle(
                       color: theme.colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,

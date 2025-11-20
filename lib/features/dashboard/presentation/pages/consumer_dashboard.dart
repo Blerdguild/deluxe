@@ -11,6 +11,10 @@ class ConsumerDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Trigger data loading for Consumer view
+    context.read<ProductBloc>().add(LoadRetailProducts());
+    context.read<DispensaryBloc>().add(LoadDispensaries());
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(

@@ -16,6 +16,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       : _productRepository = productRepository,
         super(ProductInitial()) {
     on<LoadProducts>(_onLoadProducts);
+    on<LoadRetailProducts>(_onLoadRetailProducts);
     on<ProductUpdate>(_onProductUpdate);
     on<_ProductsUpdateFailed>(_onProductsUpdateFailed);
   }
@@ -27,6 +28,19 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     emit(ProductLoading());
     _productSubscription?.cancel();
     _productSubscription = _productRepository.getProducts().listen(
+          (products) => add(ProductUpdate(products: products)),
+          onError: (error) =>
+              add(_ProductsUpdateFailed(message: error.toString())),
+        );
+  }
+
+  void _onLoadRetailProducts(
+    LoadRetailProducts event,
+    Emitter<ProductState> emit,
+  ) {
+    emit(ProductLoading());
+    _productSubscription?.cancel();
+    _productSubscription = _productRepository.getRetailProducts().listen(
           (products) => add(ProductUpdate(products: products)),
           onError: (error) =>
               add(_ProductsUpdateFailed(message: error.toString())),

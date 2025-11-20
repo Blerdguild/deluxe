@@ -11,6 +11,9 @@ import 'package:deluxe/features/dashboard/data/repositories/dispensary_repositor
 import 'package:deluxe/features/dashboard/domain/repositories/dispensary_repository.dart';
 
 import 'package:deluxe/features/dispensary/presentation/bloc/wholesale_order_bloc.dart';
+import 'package:deluxe/features/dispensary/presentation/bloc/dispensary_sales_bloc.dart';
+import 'package:deluxe/features/dispensary/domain/repositories/dispensary_sales_repository.dart';
+import 'package:deluxe/features/dispensary/data/repositories/dispensary_sales_repository_impl.dart';
 import 'package:deluxe/features/consumer/data/datasources/consumer_order_firestore_datasource.dart';
 import 'package:deluxe/features/farmer/data/datasources/farmer_order_datasource.dart';
 import 'package:deluxe/features/farmer/data/datasources/farmer_order_firestore_datasource.dart';
@@ -81,6 +84,11 @@ void setupServiceLocator() {
       () => ProductRepositoryImpl(firestore: sl<FirebaseFirestore>()));
   sl.registerLazySingleton<DispensaryRepository>(
       () => DispensaryRepositoryImpl(firestore: sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<DispensarySalesRepository>(
+      () => DispensarySalesRepositoryImpl(
+            firestore: sl<FirebaseFirestore>(),
+            authService: sl<AuthService>(),
+          ));
 
   // --- BLoCs ---
   sl.registerFactory(
@@ -128,6 +136,11 @@ void setupServiceLocator() {
   sl.registerFactory(
     () => WholesaleOrderBloc(
       repository: sl<ConsumerOrderRepository>(),
+    ),
+  );
+  sl.registerFactory(
+    () => DispensarySalesBloc(
+      repository: sl<DispensarySalesRepository>(),
     ),
   );
 }

@@ -320,7 +320,7 @@ class _ProductCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '\$${product.price.toStringAsFixed(2)}',
+                          'R${product.price.toStringAsFixed(2)}',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: theme.primaryColor,
                             fontWeight: FontWeight.bold,
