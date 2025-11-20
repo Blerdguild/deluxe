@@ -1,6 +1,7 @@
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -21,6 +22,7 @@ class _DispensaryInventoryScreenState extends State<DispensaryInventoryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final currentUser = FirebaseAuth.instance.currentUser;
 
     return BlocProvider(
       create: (context) => sl<ProductBloc>()..add(LoadRetailProducts()),
@@ -118,8 +120,12 @@ class _DispensaryInventoryScreenState extends State<DispensaryInventoryScreen> {
                         ),
                       );
                     } else if (state is ProductLoaded) {
-                      // Filter products based on search and filter status
+                      // Filter products based on search, filter status, AND current dispensary
                       final filteredProducts = state.products.where((product) {
+                        // CRITICAL FIX: Only show products owned by this dispensary
+                        final isOwnedByThisDispensary =
+                            product.dispensaryId == (currentUser?.uid ?? '');
+
                         final matchesSearch =
                             product.name.toLowerCase().contains(_searchQuery);
 
@@ -133,7 +139,9 @@ class _DispensaryInventoryScreenState extends State<DispensaryInventoryScreen> {
                           matchesFilter = product.quantity <= 0;
                         }
 
-                        return matchesSearch && matchesFilter;
+                        return isOwnedByThisDispensary &&
+                            matchesSearch &&
+                            matchesFilter;
                       }).toList();
 
                       if (filteredProducts.isEmpty) {

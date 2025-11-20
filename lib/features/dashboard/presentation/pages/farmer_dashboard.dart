@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deluxe/features/farmer/presentation/bloc/farmer_order_bloc.dart';
 import 'package:deluxe/features/farmer/presentation/bloc/harvest_bloc.dart';
 import 'package:deluxe/features/farmer/presentation/pages/add_harvest_screen.dart';
+import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
 import 'package:deluxe/shared/models/farmer_profile.dart';
 import 'package:deluxe/shared/models/order_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,7 @@ class FarmerDashboard extends StatelessWidget {
     // Ensure Blocs are loaded
     context.read<HarvestBloc>().add(LoadHarvests());
     context.read<FarmerOrderBloc>().add(LoadFarmerOrders());
+    context.read<ProductBloc>().add(LoadProducts());
 
     return Scaffold(
       body: SafeArea(
@@ -120,17 +122,22 @@ class FarmerDashboard extends StatelessWidget {
                       _SummaryCard(
                         title: 'Total Products',
                         valueBuilder: (context) =>
-                            BlocBuilder<HarvestBloc, HarvestState>(
+                            BlocBuilder<ProductBloc, ProductState>(
                           builder: (context, state) {
-                            if (state is HarvestLoaded) {
-                              return Text(state.harvests.length.toString(),
+                            if (state is ProductLoaded) {
+                              // Count only products owned by this farmer
+                              final user = FirebaseAuth.instance.currentUser;
+                              final farmerProducts = state.products
+                                  .where((p) => p.farmerId == (user?.uid ?? ''))
+                                  .length;
+                              return Text(farmerProducts.toString(),
                                   style: theme.textTheme.headlineMedium);
                             }
                             return const Text('...',
                                 style: TextStyle(fontSize: 24));
                           },
                         ),
-                        subtitle: 'Active Batches',
+                        subtitle: 'Active Products',
                       ),
                       _SummaryCard(
                         title: 'Orders Pending',
@@ -176,7 +183,7 @@ class FarmerDashboard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _ActionButton(
-                      icon: Icons.add,
+                      icon: Icons.add_circle,
                       label: 'Add Product',
                       onTap: () {
                         Navigator.of(context).push(
@@ -188,21 +195,6 @@ class FarmerDashboard extends StatelessWidget {
                           ),
                         );
                       },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _ActionButton(
-                      icon: Icons.list_alt,
-                      label: 'View Orders',
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                                  Text('Switch to Orders tab to view details')),
-                        );
-                      },
-                      isSecondary: true,
                     ),
                   ),
                 ],

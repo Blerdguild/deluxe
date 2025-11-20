@@ -42,6 +42,12 @@ class FarmerOrderRepositoryImpl implements FarmerOrderRepository {
       final batch = _firestore.batch();
 
       for (final item in order.items) {
+        // Validate that product ID is not empty
+        if (item.id.isEmpty) {
+          print('Warning: Product ID is empty for item: ${item.name}');
+          continue; // Skip this item
+        }
+        
         // Deduct from Farmer's inventory (original product)
         final productRef = _firestore.collection('products').doc(item.id);
         batch.update(productRef, {

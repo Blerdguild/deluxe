@@ -3,6 +3,7 @@ import 'package:deluxe/features/dispensary/presentation/bloc/wholesale_order_blo
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
 import 'package:deluxe/shared/models/order_model.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -37,6 +38,7 @@ class _DashboardContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final currentUser = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -70,9 +72,14 @@ class _DashboardContent extends StatelessWidget {
                               purchasesState is WholesaleOrderLoadSuccess
                                   ? purchasesState.orders
                                   : <OrderModel>[];
-                          final products = inventoryState is ProductLoaded
+                          // Filter products to only show those owned by this dispensary
+                          final allProducts = inventoryState is ProductLoaded
                               ? inventoryState.products
                               : [];
+                          final products = allProducts
+                              .where((p) =>
+                                  p.dispensaryId == (currentUser?.uid ?? ''))
+                              .toList();
 
                           // Calculate metrics
                           final totalSales = salesOrders
@@ -98,7 +105,7 @@ class _DashboardContent extends StatelessWidget {
                             crossAxisCount: 2,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 1.4,
+                            childAspectRatio: 1.2,
                             children: [
                               _SummaryCard(
                                 title: 'Total Sales',
@@ -189,8 +196,12 @@ class _DashboardContent extends StatelessWidget {
               BlocBuilder<ProductBloc, ProductState>(
                 builder: (context, state) {
                   if (state is ProductLoaded) {
-                    final lowStockProducts =
-                        state.products.where((p) => p.quantity <= 10).toList();
+                    // Filter to only show low stock products owned by this dispensary
+                    final lowStockProducts = state.products
+                        .where((p) =>
+                            p.dispensaryId == (currentUser?.uid ?? '') &&
+                            p.quantity <= 10)
+                        .toList();
 
                     if (lowStockProducts.isEmpty) {
                       return const SizedBox.shrink();
@@ -303,7 +314,7 @@ class _SummaryCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(16),
@@ -315,22 +326,31 @@ class _SummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 6),
+          Flexible(
+            child: Text(
+              value,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+                fontSize: 20,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             title,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[500],
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+              fontSize: 12,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

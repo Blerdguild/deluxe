@@ -4,6 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:deluxe/core/firebase/auth_service.dart';
 import 'package:deluxe/core/firebase/firestore_service.dart';
 import 'package:deluxe/core/firebase/cloud_functions_service.dart';
+import 'package:deluxe/features/dashboard/domain/repositories/dispensary_repository.dart';
+import 'package:deluxe/shared/models/dispensary_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -15,15 +17,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
   final FirestoreService _firestoreService;
   final CloudFunctionsService _cloudFunctionsService;
+  final DispensaryRepository _dispensaryRepository;
 
   // FIX: Update the constructor to accept the required services.
   AuthBloc({
     required AuthService authService,
     required FirestoreService firestoreService,
     required CloudFunctionsService cloudFunctionsService,
+    required DispensaryRepository dispensaryRepository,
   })  : _authService = authService,
         _firestoreService = firestoreService,
         _cloudFunctionsService = cloudFunctionsService,
+        _dispensaryRepository = dispensaryRepository,
         super(AuthInitial()) {
     // Register the event handlers.
     on<AppStarted>(_onAppStarted);
@@ -100,6 +105,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         user: user,
         role: event.role,
       );
+
+      // If role is dispensary, create dispensary entry
+      if (event.role == 'dispensary') {
+        try {
+          final dispensary = Dispensary(
+            id: user.uid,
+            name: user.displayName ?? 'Unnamed Dispensary',
+            location: '', // Can be updated later in profile
+            imageUrl: user.photoURL ?? '',
+          );
+          await _dispensaryRepository.createDispensary(dispensary);
+          debugPrint('Dispensary entry created for ${user.uid}');
+        } catch (e) {
+          debugPrint('Error creating dispensary entry: $e');
+          // Don't block authentication if dispensary creation fails
+        }
+      }
 
       // Create Wallet (Idempotent call to backend)
       try {

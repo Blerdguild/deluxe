@@ -96,6 +96,7 @@ void setupServiceLocator() {
       authService: sl<AuthService>(),
       firestoreService: sl<FirestoreService>(),
       cloudFunctionsService: sl<CloudFunctionsService>(),
+      dispensaryRepository: sl<DispensaryRepository>(),
     ),
   );
   sl.registerFactory(
