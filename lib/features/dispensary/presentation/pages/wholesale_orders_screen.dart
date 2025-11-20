@@ -5,6 +5,10 @@ import 'package:deluxe/shared/models/order_model.dart';
 import 'package:intl/intl.dart';
 import 'package:deluxe/features/dispensary/presentation/pages/wholesale_order_detail_screen.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:deluxe/features/dispensary/presentation/bloc/wholesale_order_bloc.dart';
+import 'package:deluxe/shared/services/service_locator.dart';
+
 class WholesaleOrdersScreen extends StatelessWidget {
   const WholesaleOrdersScreen({super.key});
 
@@ -19,68 +23,66 @@ class WholesaleOrdersScreen extends StatelessWidget {
       );
     }
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('My Wholesale Orders'),
-        elevation: 0,
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('orders')
-            .where('consumerId', isEqualTo: currentUser.uid)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return BlocProvider(
+      create: (context) => sl<WholesaleOrderBloc>()..add(LoadWholesaleOrders()),
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          title: const Text('My Wholesale Orders'),
+          elevation: 0,
+        ),
+        body: BlocBuilder<WholesaleOrderBloc, WholesaleOrderState>(
+          builder: (context, state) {
+            if (state is WholesaleOrderLoadInProgress) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-                  const SizedBox(height: 16),
-                  Text('Error loading orders: ${snapshot.error}'),
-                ],
-              ),
-            );
-          }
+            if (state is WholesaleOrderLoadFailure) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                    const SizedBox(height: 16),
+                    Text('Error loading orders: ${state.message}'),
+                  ],
+                ),
+              );
+            }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_bag_outlined,
-                      size: 64, color: theme.primaryColor.withOpacity(0.5)),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No orders yet',
-                    style: theme.textTheme.titleLarge,
+            if (state is WholesaleOrderLoadSuccess) {
+              if (state.orders.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.shopping_bag_outlined,
+                          size: 64, color: theme.primaryColor.withOpacity(0.5)),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No orders yet',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text('Your wholesale orders will appear here'),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  const Text('Your wholesale orders will appear here'),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          final orders = snapshot.data!.docs
-              .map((doc) => OrderModel.fromSnapshot(doc))
-              .toList();
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: state.orders.length,
+                itemBuilder: (context, index) {
+                  final order = state.orders[index];
+                  return _OrderCard(order: order);
+                },
+              );
+            }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final order = orders[index];
-              return _OrderCard(order: order);
-            },
-          );
-        },
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
       ),
     );
   }
@@ -234,7 +236,9 @@ class _OrderCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  product.name,
+                                  product.quantity > 1
+                                      ? '${product.name} (x${product.quantity})'
+                                      : product.name,
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -249,7 +253,7 @@ class _OrderCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '\$${product.price.toStringAsFixed(2)}',
+                            '\$${(product.price * product.quantity).toStringAsFixed(2)}',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: theme.primaryColor,

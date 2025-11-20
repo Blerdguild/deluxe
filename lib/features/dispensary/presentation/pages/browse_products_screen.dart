@@ -1,8 +1,11 @@
-import 'package:deluxe/core/repositories/product_repository.dart';
 import 'package:deluxe/shared/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:deluxe/features/dispensary/presentation/pages/product_detail_screen.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
+import 'package:deluxe/shared/services/service_locator.dart';
 
 class BrowseProductsScreen extends StatefulWidget {
   const BrowseProductsScreen({super.key});
@@ -12,7 +15,6 @@ class BrowseProductsScreen extends StatefulWidget {
 }
 
 class _BrowseProductsScreenState extends State<BrowseProductsScreen> {
-  final ProductRepository _productRepository = ProductRepositoryImpl();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedFilter = 'All';
@@ -35,168 +37,179 @@ class _BrowseProductsScreenState extends State<BrowseProductsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Browse Products'),
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          // Search and Filter Section
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Search Bar
-                TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value.toLowerCase();
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Search products...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
+    return BlocProvider(
+      create: (context) => sl<ProductBloc>()..add(LoadProducts()),
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          title: const Text('Browse Products'),
+          elevation: 0,
+        ),
+        body: Column(
+          children: [
+            // Search and Filter Section
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Search Bar
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search products...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: theme.cardTheme.color,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Filter Chips
+                  SizedBox(
+                    height: 40,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _filterOptions.length,
+                      itemBuilder: (context, index) {
+                        final filter = _filterOptions[index];
+                        final isSelected = _selectedFilter == filter;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: FilterChip(
+                            label: Text(filter),
+                            selected: isSelected,
+                            onSelected: (selected) {
                               setState(() {
-                                _searchQuery = '';
+                                _selectedFilter = filter;
                               });
                             },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: theme.cardTheme.color,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                            selectedColor: theme.primaryColor.withOpacity(0.3),
+                            checkmarkColor: theme.primaryColor,
+                            backgroundColor: theme.cardTheme.color,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                // Filter Chips
-                SizedBox(
-                  height: 40,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _filterOptions.length,
-                    itemBuilder: (context, index) {
-                      final filter = _filterOptions[index];
-                      final isSelected = _selectedFilter == filter;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          label: Text(filter),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              _selectedFilter = filter;
-                            });
-                          },
-                          selectedColor: theme.primaryColor.withOpacity(0.3),
-                          checkmarkColor: theme.primaryColor,
-                          backgroundColor: theme.cardTheme.color,
+                ],
+              ),
+            ),
+
+            // Products Grid
+            Expanded(
+              child: BlocBuilder<ProductBloc, ProductState>(
+                builder: (context, state) {
+                  if (state is ProductLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is ProductError) {
+                    return Center(
+                      child: Text('Error: ${state.message}'),
+                    );
+                  }
+
+                  if (state is ProductLoaded) {
+                    if (state.products.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.inventory_2_outlined,
+                                size: 64,
+                                color: theme.primaryColor.withOpacity(0.5)),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No products available',
+                              style: theme.textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text('Check back later for new products'),
+                          ],
                         ),
                       );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+                    }
 
-          // Products Grid
-          Expanded(
-            child: StreamBuilder<List<Product>>(
-              stream: _productRepository.getProducts(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                    // Filter products
+                    var products = state.products;
+                    if (_searchQuery.isNotEmpty) {
+                      products = products.where((product) {
+                        return product.name
+                                .toLowerCase()
+                                .contains(_searchQuery) ||
+                            product.farmerName
+                                .toLowerCase()
+                                .contains(_searchQuery);
+                      }).toList();
+                    }
+                    if (_selectedFilter != 'All') {
+                      products = products.where((product) {
+                        return product.type == _selectedFilter;
+                      }).toList();
+                    }
+
+                    if (products.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.search_off,
+                                size: 64,
+                                color: theme.primaryColor.withOpacity(0.5)),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No products found',
+                              style: theme.textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text('Try adjusting your search or filters'),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        final product = products[index];
+                        return _ProductCard(product: product);
+                      },
+                    );
+                  }
+
                   return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.inventory_2_outlined,
-                            size: 64,
-                            color: theme.primaryColor.withOpacity(0.5)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No products available',
-                          style: theme.textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Check back later for new products'),
-                      ],
-                    ),
-                  );
-                }
-
-                // Filter products
-                var products = snapshot.data!;
-                if (_searchQuery.isNotEmpty) {
-                  products = products.where((product) {
-                    return product.name.toLowerCase().contains(_searchQuery) ||
-                        product.farmerName.toLowerCase().contains(_searchQuery);
-                  }).toList();
-                }
-                if (_selectedFilter != 'All') {
-                  products = products.where((product) {
-                    return product.type == _selectedFilter;
-                  }).toList();
-                }
-
-                if (products.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.search_off,
-                            size: 64,
-                            color: theme.primaryColor.withOpacity(0.5)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No products found',
-                          style: theme.textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Try adjusting your search or filters'),
-                      ],
-                    ),
-                  );
-                }
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    return _ProductCard(product: product);
-                  },
-                );
-              },
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -6,7 +6,7 @@ class AppTheme {
   static const Color _background = Color(0xFF0D1610); // Darker Green/Black
   static const Color _cardSurface = Color(0xFF16261A); // Dark Green for cards
   static const Color _primaryGreen = Color(0xFF2E7D32); // Rich Green
-  static const Color _textWhite =Color.fromARGB(255, 255, 237, 185); // Off-white/Eggshell
+  static const Color _textWhite =Color.fromARGB(255, 255, 246, 219); // Off-white/Eggshell
   static const Color _textGrey = Color(0xFFB0BEC5);
   static const Color _gold = Color(0xFFFFD700);
 

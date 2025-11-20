@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:deluxe/shared/services/service_locator.dart';
 import 'package:intl/intl.dart';
+import 'package:deluxe/shared/models/order_model.dart';
 
 class FarmerOrdersScreen extends StatelessWidget {
   const FarmerOrdersScreen({super.key});
@@ -169,7 +170,7 @@ class FarmerOrdersScreen extends StatelessWidget {
 }
 
 class _OrderCard extends StatelessWidget {
-  final dynamic order; // Replace with proper Order type
+  final OrderModel order;
   final VoidCallback onAccept;
   final VoidCallback onDecline;
 
@@ -184,6 +185,10 @@ class _OrderCard extends StatelessWidget {
       case 'pending':
         return Colors.orange;
       case 'accepted':
+        return Colors.blue;
+      case 'shipped':
+        return Colors.purple;
+      case 'delivered':
         return Colors.green;
       case 'declined':
         return Colors.red;
@@ -198,6 +203,10 @@ class _OrderCard extends StatelessWidget {
         return Icons.schedule;
       case 'accepted':
         return Icons.check_circle;
+      case 'shipped':
+        return Icons.local_shipping;
+      case 'delivered':
+        return Icons.done_all;
       case 'declined':
         return Icons.cancel;
       default:
@@ -365,7 +374,8 @@ class _OrderCard extends StatelessWidget {
                           label: const Text('Accept'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
-                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

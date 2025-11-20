@@ -1,7 +1,7 @@
 import 'package:deluxe/features/dashboard/presentation/pages/farmer_dashboard.dart';
 import 'package:deluxe/features/dashboard/presentation/pages/harvests_screen.dart';
-import 'package:deluxe/features/dashboard/presentation/pages/farmer_orders_screen.dart';
-import 'package:deluxe/features/dashboard/presentation/pages/profile_screen.dart';
+import 'package:deluxe/features/farmer/presentation/pages/farmer_orders_screen.dart';
+import 'package:deluxe/features/profile/presentation/pages/farmer_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class FarmerMainShell extends StatefulWidget {
@@ -18,7 +18,7 @@ class _FarmerMainShellState extends State<FarmerMainShell> {
     FarmerDashboard(),
     HarvestsScreen(),
     FarmerOrdersScreen(),
-    ProfileScreen(),
+    FarmerProfileScreen(),
   ];
 
   void _onItemTapped(int index) {

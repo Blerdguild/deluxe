@@ -3,6 +3,8 @@ import 'package:deluxe/shared/models/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:deluxe/shared/models/product_model.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final OrderModel order;
@@ -38,7 +40,8 @@ class OrderDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SectionTitle(title: 'Buyer Information', icon: Icons.store),
+                  const _SectionTitle(
+                      title: 'Buyer Information', icon: Icons.store),
                   const SizedBox(height: 12),
                   _InfoCard(
                     children: [
@@ -85,7 +88,8 @@ class OrderDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SectionTitle(title: 'Order Summary', icon: Icons.receipt),
+                  const _SectionTitle(
+                      title: 'Order Summary', icon: Icons.receipt),
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -122,7 +126,7 @@ class OrderDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Action Buttons (if pending)
+            // Action Buttons
             if (order.status == 'Pending')
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -174,6 +178,60 @@ class OrderDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+
+            if (order.status == 'Accepted')
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _updateStatus(context, 'Shipped'),
+                    icon: const Icon(Icons.local_shipping, size: 24),
+                    label: const Text(
+                      'Mark as Shipped',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+            if (order.status == 'Shipped')
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _updateStatus(context, 'Delivered'),
+                    icon: const Icon(Icons.done_all, size: 24),
+                    label: const Text(
+                      'Mark as Delivered',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
                 ),
               ),
 
@@ -285,6 +343,58 @@ class OrderDetailScreen extends StatelessWidget {
       },
     );
   }
+
+  void _updateStatus(BuildContext context, String newStatus) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardTheme.color,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text('Mark as $newStatus'),
+          content:
+              Text('Are you sure you want to mark this order as $newStatus?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.read<FarmerOrderBloc>().add(
+                      UpdateOrderStatus(order.id, newStatus),
+                    );
+                Navigator.pop(dialogContext);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        Icon(Icons.check_circle,
+                            color: Theme.of(context).colorScheme.onPrimary),
+                        const SizedBox(width: 8),
+                        Text('Order marked as $newStatus'),
+                      ],
+                    ),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 // Status Header Widget
@@ -298,9 +408,13 @@ class _StatusHeader extends StatelessWidget {
       case 'pending':
         return Colors.orange;
       case 'accepted':
-        return Colors.green;
+        return Colors.blue;
       case 'declined':
         return Colors.red;
+      case 'shipped':
+        return Colors.purple;
+      case 'delivered':
+        return Colors.green;
       default:
         return Colors.grey;
     }
@@ -314,6 +428,10 @@ class _StatusHeader extends StatelessWidget {
         return Icons.check_circle;
       case 'declined':
         return Icons.cancel;
+      case 'shipped':
+        return Icons.local_shipping;
+      case 'delivered':
+        return Icons.done_all;
       default:
         return Icons.info;
     }
@@ -465,7 +583,7 @@ class _InfoRow extends StatelessWidget {
 
 // Product Item Widget
 class _ProductItem extends StatelessWidget {
-  final dynamic product;
+  final Product product;
 
   const _ProductItem({required this.product});
 
@@ -484,26 +602,35 @@ class _ProductItem extends StatelessWidget {
       child: Row(
         children: [
           // Product Image
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: 60,
+              height: 60,
               color: theme.scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(12),
-              image: product.imageUrl.isNotEmpty
-                  ? DecorationImage(
-                      image: NetworkImage(product.imageUrl),
+              child: product.imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: product.imageUrl,
                       fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.eco,
+                        color: theme.primaryColor.withOpacity(0.5),
+                        size: 30,
+                      ),
                     )
-                  : null,
+                  : Icon(
+                      Icons.eco,
+                      color: theme.primaryColor.withOpacity(0.5),
+                      size: 30,
+                    ),
             ),
-            child: product.imageUrl.isEmpty
-                ? Icon(
-                    Icons.eco,
-                    color: theme.primaryColor.withOpacity(0.5),
-                    size: 30,
-                  )
-                : null,
           ),
           const SizedBox(width: 16),
           // Product Info
@@ -528,7 +655,7 @@ class _ProductItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${product.weight.toStringAsFixed(1)}g',
+                  '${product.weight.toStringAsFixed(1)}g • Qty: ${product.quantity}',
                   style: theme.textTheme.bodySmall,
                 ),
               ],
@@ -536,7 +663,7 @@ class _ProductItem extends StatelessWidget {
           ),
           // Price
           Text(
-            currencyFormat.format(product.price),
+            currencyFormat.format(product.price * product.quantity),
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.primaryColor,
               fontWeight: FontWeight.bold,

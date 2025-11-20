@@ -52,11 +52,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             'Unknown Dispensary';
       }
 
+      final orderedProduct = Product(
+        id: widget.product.id,
+        name: widget.product.name,
+        type: widget.product.type,
+        price: widget.product.price,
+        rating: widget.product.rating,
+        reviewCount: widget.product.reviewCount,
+        imageUrl: widget.product.imageUrl,
+        description: widget.product.description,
+        dispensaryId: widget.product.dispensaryId,
+        farmerId: widget.product.farmerId,
+        farmerName: widget.product.farmerName,
+        weight: widget.product.weight,
+        quantity: _quantity,
+      );
+
       final order = OrderModel(
         id: _uuid.v4(),
         consumerId: currentUser.uid, // Dispensary is the consumer
         sellerId: widget.product.farmerId, // Farmer is the seller
-        items: [widget.product],
+        items: [orderedProduct],
         totalPrice: widget.product.price * _quantity,
         status: 'Pending',
         createdAt: DateTime.now(),

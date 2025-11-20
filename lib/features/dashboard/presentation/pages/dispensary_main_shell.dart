@@ -1,6 +1,6 @@
 import 'package:deluxe/features/dashboard/presentation/pages/dispensary_dashboard.dart';
 import 'package:deluxe/features/dispensary/presentation/pages/browse_products_screen.dart';
-import 'package:deluxe/features/dashboard/presentation/pages/orders_screen.dart';
+import 'package:deluxe/features/dispensary/presentation/pages/wholesale_orders_screen.dart';
 import 'package:deluxe/features/dispensary/presentation/pages/dispensary_profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class _DispensaryMainShellState extends State<DispensaryMainShell> {
   static final List<Widget> _widgetOptions = <Widget>[
     const DispensaryDashboard(), // Dashboard
     const BrowseProductsScreen(), // Browse Products (B2B)
-    const OrdersScreen(), // Orders
+    const WholesaleOrdersScreen(), // Wholesale Orders
     const DispensaryProfileScreen(), // Profile
   ];
 

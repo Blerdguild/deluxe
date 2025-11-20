@@ -9,7 +9,8 @@ import 'package:deluxe/features/dashboard/bloc/dispensary_bloc.dart';
 import 'package:deluxe/features/dashboard/bloc/product_bloc.dart';
 import 'package:deluxe/features/dashboard/data/repositories/dispensary_repository_impl.dart';
 import 'package:deluxe/features/dashboard/domain/repositories/dispensary_repository.dart';
-import 'package:deluxe/features/dispensary/presentation/bloc/order_creation_bloc.dart';
+
+import 'package:deluxe/features/dispensary/presentation/bloc/wholesale_order_bloc.dart';
 import 'package:deluxe/features/consumer/data/datasources/consumer_order_firestore_datasource.dart';
 import 'package:deluxe/features/farmer/data/datasources/farmer_order_datasource.dart';
 import 'package:deluxe/features/farmer/data/datasources/farmer_order_firestore_datasource.dart';
@@ -122,6 +123,11 @@ void setupServiceLocator() {
   sl.registerFactory(
     () => FarmerOrderBloc(
       farmerOrderRepository: sl<FarmerOrderRepository>(),
+    ),
+  );
+  sl.registerFactory(
+    () => WholesaleOrderBloc(
+      repository: sl<ConsumerOrderRepository>(),
     ),
   );
 }

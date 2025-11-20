@@ -209,12 +209,24 @@ class WholesaleOrderDetailScreen extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Weight: ${product.weight}g',
-                                  style: theme.textTheme.bodyMedium,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Weight: ${product.weight}g',
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                    Text(
+                                      'Qty: ${product.quantity}',
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Text(
-                                  '\$${product.price.toStringAsFixed(2)}',
+                                  '\$${(product.price * product.quantity).toStringAsFixed(2)}',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     color: theme.primaryColor,
                                     fontWeight: FontWeight.bold,
