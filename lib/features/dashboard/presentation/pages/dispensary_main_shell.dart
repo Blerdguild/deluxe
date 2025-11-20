@@ -1,6 +1,7 @@
 import 'package:deluxe/features/dashboard/presentation/pages/dispensary_dashboard.dart';
 import 'package:deluxe/features/dispensary/presentation/pages/browse_products_screen.dart';
 import 'package:deluxe/features/dispensary/presentation/pages/wholesale_orders_screen.dart';
+import 'package:deluxe/features/dispensary/presentation/pages/dispensary_consumer_orders_screen.dart';
 import 'package:deluxe/features/dispensary/presentation/pages/dispensary_profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,8 @@ class _DispensaryMainShellState extends State<DispensaryMainShell> {
   static final List<Widget> _widgetOptions = <Widget>[
     const DispensaryDashboard(), // Dashboard
     const BrowseProductsScreen(), // Browse Products (B2B)
-    const WholesaleOrdersScreen(), // Wholesale Orders
+    const WholesaleOrdersScreen(), // Wholesale Orders (Purchases)
+    const DispensaryConsumerOrdersScreen(), // Consumer Orders (Sales)
     const DispensaryProfileScreen(), // Profile
   ];
 
@@ -45,6 +47,7 @@ class _DispensaryMainShellState extends State<DispensaryMainShell> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_filled),
@@ -55,8 +58,12 @@ class _DispensaryMainShellState extends State<DispensaryMainShell> {
             label: 'Browse',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
-            label: 'Orders',
+            icon: Icon(Icons.shopping_cart),
+            label: 'Purchases',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.point_of_sale),
+            label: 'Sales',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

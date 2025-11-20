@@ -18,10 +18,10 @@
     - [x] Implement `ConsumerOrderBloc`.
 - [x] **Dispensary Order Management (B2C):**
     - [x] Create `DispensarySalesBloc` to view incoming consumer orders.
-    - [ ] Create `DispensaryConsumerOrdersScreen` UI.
-    - [ ] Implement status updates (Accept/Decline/Ready for Pickup).
-- [ ] **Inventory Integration (B2C):**
-    - [ ] Deduct stock from Dispensary inventory upon Consumer order.
+    - [x] Create `DispensaryConsumerOrdersScreen` UI.
+    - [x] Implement status updates (Accept/Decline/Ready for Pickup).
+- [x] **Inventory Integration (B2C):**
+    - [x] Deduct stock from Dispensary inventory upon Consumer order.
 
 ## Phase 3: Dispensary Inventory Management
 - [ ] **Inventory Screen:**

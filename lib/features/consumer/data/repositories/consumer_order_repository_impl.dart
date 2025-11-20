@@ -32,6 +32,20 @@ class ConsumerOrderRepositoryImpl implements ConsumerOrderRepository {
 
   @override
   Future<void> createOrder(OrderModel order) async {
-    await _firestore.collection('orders').doc(order.id).set(order.toJson());
+    final batch = _firestore.batch();
+
+    // 1. Create the order
+    final orderRef = _firestore.collection('orders').doc(order.id);
+    batch.set(orderRef, order.toJson());
+
+    // 2. Deduct inventory from Dispensary's stock
+    for (final item in order.items) {
+      final productRef = _firestore.collection('products').doc(item.id);
+      batch.update(productRef, {
+        'quantity': FieldValue.increment(-item.quantity),
+      });
+    }
+
+    await batch.commit();
   }
 }
