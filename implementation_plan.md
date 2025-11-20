@@ -24,16 +24,16 @@
     - [x] Deduct stock from Dispensary inventory upon Consumer order.
 
 ## Phase 3: Dispensary Inventory Management
-- [ ] **Inventory Screen:**
-    - [ ] Create `DispensaryInventoryScreen`.
-    - [ ] Display current stock levels (derived from Wholesale orders).
-    - [ ] Allow manual adjustments (optional).
+- [x] **Inventory Screen:**
+    - [x] Create `DispensaryInventoryScreen`.
+    - [x] Display current stock levels (derived from Wholesale orders).
+    - [x] Allow manual adjustments (optional).
 
 ## Phase 4: Analytics & Dashboard
-- [ ] **Dispensary Dashboard:**
-    - [ ] Show sales metrics (B2C).
-    - [ ] Show inventory alerts (Low stock).
-    - [ ] Show pending wholesale orders.
+- [x] **Dispensary Dashboard:**
+    - [x] Show sales metrics (B2C).
+    - [x] Show inventory alerts (Low stock).
+    - [x] Show pending wholesale orders.
 
 ## Phase 5: Final Polish
 - [ ] **UI/UX Review:** Ensure consistent styling and responsive design.

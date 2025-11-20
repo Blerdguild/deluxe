@@ -1,5 +1,5 @@
 import 'package:deluxe/features/auth/bloc/auth_bloc.dart';
-import 'package:deluxe/features/dashboard/presentation/pages/dispensary_dashboard.dart';
+import 'package:deluxe/features/dashboard/presentation/pages/dispensary_main_shell.dart';
 import 'package:deluxe/features/dashboard/presentation/pages/farmer_dashboard.dart';
 import 'package:deluxe/features/dashboard/presentation/pages/farmer_shell.dart';
 import 'package:deluxe/features/dashboard/presentation/pages/main_shell.dart';
@@ -22,7 +22,7 @@ class DashboardScreen extends StatelessWidget {
             case 'farmer':
               return const FarmerShell();
             case 'dispensary':
-              return const DispensaryDashboard();
+              return const DispensaryMainShell();
             default:
               return const Scaffold(
                 body: Center(
