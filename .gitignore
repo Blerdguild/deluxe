@@ -36,6 +36,11 @@
 /android/key.properties
 /android/local.properties
 
+# Firebase Configuration (contains sensitive API keys)
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
+/ios/firebase_app_id_file.json
+
 # iOS
 /ios/Flutter/App.framework
 /ios/Flutter/Debug.xcconfig
